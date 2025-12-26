@@ -38,9 +38,10 @@ const App: React.FC = () => {
       setProfile(result);
       setOriginalProfile(result);
       setState(AppState.RESULT);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      setError("La Inteligencia Artificial está saturada en este momento (Error 429). Por favor espera 1 minuto y vuelve a intentar.");
+      // Usamos el mensaje del error que viene del servicio (que ya tiene lógica de reintentos)
+      setError(error.message || "Error desconocido conectando con la colmena.");
       setState(AppState.FORM);
     }
   };
