@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BeeNouns</title>
+    <!-- Import Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              nounYellow: '#FFFF00', 
+              nounRed: '#E63433',   
+              nounBlue: '#2D81FF',
+              nounOffWhite: '#F2F2F2',
+              honeyAmber: '#FBBF24',
+            },
+            fontFamily: {
+              'press-start': ['"Press Start 2P"', 'cursive', 'monospace'], 
+              'sans': ['Verdana', 'sans-serif'],
+            },
+            boxShadow: {
+              'hard': '8px 8px 0px 0px rgba(0,0,0,1)',
+              'hard-sm': '4px 4px 0px 0px rgba(0,0,0,1)',
+              'hard-xl': '12px 12px 0px 0px rgba(0,0,0,1)',
+            },
+            animation: {
+              'float': 'float 3s ease-in-out infinite',
+              'flap-fast': 'flap 0.15s infinite alternate',
+              'fly-around': 'fly-around 6s ease-in-out infinite',
+            },
+            keyframes: {
+              float: {
+                '0%, 100%': { transform: 'translateY(0px)' },
+                '50%': { transform: 'translateY(-20px)' },
+              },
+              flap: {
+                '0%': { transform: 'rotate(-10deg) scaleY(1)' },
+                '100%': { transform: 'rotate(10deg) scaleY(0.9)' },
+              },
+              'fly-around': {
+                '0%, 100%': { transform: 'translate(0, 0) rotate(0deg)' },
+                '25%': { transform: 'translate(30px, -40px) rotate(10deg)' },
+                '50%': { transform: 'translate(-20px, -10px) rotate(-10deg)' },
+                '75%': { transform: 'translate(40px, 20px) rotate(5deg)' },
+              }
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+      ::-webkit-scrollbar {
+        width: 16px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #FFFFFF;
+        border-left: 2px solid black;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #000000;
+        border: 2px solid white;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #E63433;
+      }
+      
+      .pixel-font {
+        font-family: 'Press Start 2P', cursive, monospace; 
+        font-weight: 400;
+        letter-spacing: -0.05em;
+      }
+
+      .animate-wing-left {
+        transform-origin: 12px 14px;
+        animation: flapLeft 0.1s infinite alternate ease-in-out;
+      }
+      .animate-wing-right {
+        transform-origin: 20px 14px;
+        animation: flapRight 0.1s infinite alternate ease-in-out;
+      }
+
+      @keyframes flapLeft {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(-25deg); }
+      }
+      @keyframes flapRight {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(25deg); }
+      }
+
+      /* Animación para la celda (Hexágono) */
+      @keyframes cell-pop {
+        0% { opacity: 0; transform: scale(0) rotate(-10deg); }
+        70% { transform: scale(1.1) rotate(5deg); }
+        100% { opacity: 1; transform: scale(1) rotate(0deg); }
+      }
+
+      /* Animación para la abeja saliendo desde dentro */
+      @keyframes bee-emerge {
+        0% { opacity: 0; transform: scale(0) translateY(10px); }
+        100% { opacity: 1; transform: scale(1) translateY(0); }
+      }
+
+      /* Animación para el globo de texto */
+      @keyframes bubble-pop {
+        0% { opacity: 0; transform: scale(0) translateY(10px); }
+        80% { transform: scale(1.1) translateY(-5px); }
+        100% { opacity: 1; transform: scale(1) translateY(0); }
+      }
+
+      .animate-cell-pop {
+        animation: cell-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      }
+
+      .animate-bee-emerge {
+        opacity: 0;
+        animation: bee-emerge 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0.8s forwards;
+      }
+
+      .animate-bubble-pop {
+        opacity: 0;
+        animation: bubble-pop 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) 1.5s forwards;
+      }
+
+      .speech-bubble-tail {
+        position: absolute;
+        bottom: -16px;
+        left: 20px;
+        width: 16px;
+        height: 16px;
+        background: white;
+        border-right: 4px solid black;
+        border-bottom: 4px solid black;
+        transform: rotate(45deg);
+        z-index: -1;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-nounYellow text-black overflow-x-hidden">
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
