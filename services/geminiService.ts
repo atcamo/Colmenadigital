@@ -4,8 +4,8 @@ import { BeekeeperInput, GeneratedWebProfile } from "../types";
 
 export const generateWebProfile = async (input: BeekeeperInput): Promise<GeneratedWebProfile> => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-  const model = "gemini-3-pro-preview";
-  
+  const model = "gemini-1.5-flash";
+
   const systemInstruction = `
     Eres un experto estratega de marca para productos alimenticios artesanales premium y un conocedor del ecosistema Web3 (Farcaster, Nouns, Blockchain).
     Tu objetivo es completar el contenido para una PLANTILLA DE SITIO WEB LIMPIA Y MODERNA y proponer una IDENTIDAD DIGITAL DESCENTRALIZADA.
@@ -47,7 +47,7 @@ export const generateWebProfile = async (input: BeekeeperInput): Promise<Generat
             heroTitle: { type: Type.STRING },
             tagline: { type: Type.STRING },
             aboutUsText: { type: Type.STRING },
-            valueProposition: { 
+            valueProposition: {
               type: Type.ARRAY,
               items: { type: Type.STRING }
             },
