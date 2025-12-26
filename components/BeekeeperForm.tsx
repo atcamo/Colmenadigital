@@ -64,7 +64,7 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
     // Si ya contiene el valor, no lo duplicamos
     const current = formData[field] as string;
     if (current.includes(value)) return;
-    
+
     const newValue = current ? `${current}, ${value}` : value;
     setFormData({ ...formData, [field]: newValue });
   };
@@ -104,14 +104,20 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
       <div className="max-w-3xl w-full">
         <BlockCard className="bg-white">
           <h2 className="text-3xl md:text-5xl font-black mb-8 text-center uppercase pixel-font">El Intercambio</h2>
-          
+
           {error && (
-            <div className="mb-6 bg-red-100 border-4 border-nounRed p-4 flex items-center gap-3 animate-pulse">
-                <XCircle className="text-nounRed w-8 h-8" />
-                <div>
-                    <h4 className="font-black uppercase text-nounRed text-sm">Error de la Colmena</h4>
-                    <p className="text-xs font-bold text-red-800">{error}</p>
-                </div>
+            <div className="mb-6 bg-red-100 border-4 border-nounRed p-4 flex items-center gap-3 animate-pulse cursor-help group relative" title={error}>
+              <XCircle className="text-nounRed w-8 h-8 flex-shrink-0" />
+              <div>
+                <h4 className="font-black uppercase text-nounRed text-sm">Problema en la Colmena</h4>
+                <p className="text-xs font-bold text-red-800">
+                  No pudimos generar tu sitio. Posa el mouse aquí para ver detalles técnicos.
+                </p>
+              </div>
+              {/* Tooltip visual personalizado (opcional, el title nativo ya funciona) */}
+              <div className="hidden group-hover:block absolute top-full left-0 mt-2 z-50 bg-black text-white p-2 text-[10px] font-mono w-full rounded shadow-lg border-2 border-white pointer-events-none">
+                {error}
+              </div>
             </div>
           )}
 
@@ -141,42 +147,40 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
             </div>
 
             {/* Sección: Huella Digital (OBLIGATORIA CON VERIFICACIÓN) */}
-            <div className={`p-6 border-4 border-black shadow-hard-sm transition-all duration-300 ${
-              isUrlValid ? 'bg-blue-50 border-nounBlue' : (formData.socialUrl && !isChecking ? 'bg-red-50 border-nounRed' : 'bg-gray-50')
-            }`}>
+            <div className={`p-6 border-4 border-black shadow-hard-sm transition-all duration-300 ${isUrlValid ? 'bg-blue-50 border-nounBlue' : (formData.socialUrl && !isChecking ? 'bg-red-50 border-nounRed' : 'bg-gray-50')
+              }`}>
               <div className="flex justify-between items-start mb-4">
                 <div>
-                    <h3 className="text-xl font-black uppercase flex items-center gap-2">
-                        2. Verificación Social *
-                    </h3>
-                    <p className="text-xs font-bold uppercase text-gray-600">Pega el link a tu Instagram o Facebook para validar tu identidad.</p>
+                  <h3 className="text-xl font-black uppercase flex items-center gap-2">
+                    2. Verificación Social *
+                  </h3>
+                  <p className="text-xs font-bold uppercase text-gray-600">Pega el link a tu Instagram o Facebook para validar tu identidad.</p>
                 </div>
                 {isChecking ? (
-                    <Loader2 className="animate-spin text-nounBlue" size={28} />
+                  <Loader2 className="animate-spin text-nounBlue" size={28} />
                 ) : isUrlValid ? (
-                    <div className="flex flex-col items-end">
-                        <ShieldCheck className="text-nounBlue" size={32} />
-                        <span className="text-[10px] font-black text-nounBlue uppercase">Validado</span>
-                    </div>
+                  <div className="flex flex-col items-end">
+                    <ShieldCheck className="text-nounBlue" size={32} />
+                    <span className="text-[10px] font-black text-nounBlue uppercase">Validado</span>
+                  </div>
                 ) : (
-                    <AlertCircle className={formData.socialUrl ? "text-nounRed" : "text-gray-300"} size={28} />
+                  <AlertCircle className={formData.socialUrl ? "text-nounRed" : "text-gray-300"} size={28} />
                 )}
               </div>
-              
+
               <div className="relative">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                   <Instagram size={24} />
                 </div>
-                <input 
-                  required 
-                  name="socialUrl" 
-                  value={formData.socialUrl} 
-                  onChange={handleChange} 
+                <input
+                  required
+                  name="socialUrl"
+                  value={formData.socialUrl}
+                  onChange={handleChange}
                   placeholder="instagram.com/tu_marca"
-                  className={`w-full border-4 p-3 pl-12 font-bold text-lg outline-none transition-all ${
-                    isChecking ? 'border-gray-300 opacity-50' : 
-                    (formData.socialUrl ? (isUrlValid ? 'border-nounBlue bg-white' : 'border-nounRed bg-white') : 'border-black bg-white')
-                  }`} 
+                  className={`w-full border-4 p-3 pl-12 font-bold text-lg outline-none transition-all ${isChecking ? 'border-gray-300 opacity-50' :
+                      (formData.socialUrl ? (isUrlValid ? 'border-nounBlue bg-white' : 'border-nounRed bg-white') : 'border-black bg-white')
+                    }`}
                 />
               </div>
               {urlError && <p className="text-nounRed font-black text-[10px] mt-2 uppercase animate-pulse">{urlError}</p>}
@@ -185,17 +189,17 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
 
             {/* Logo (Opcional) */}
             <div className="bg-gray-100 p-4 border-2 border-black border-dashed flex items-center justify-between">
-                <div>
-                  <h3 className="font-black text-sm uppercase flex items-center gap-2"><ImageIcon size={18} /> Logo de tu marca</h3>
-                  <p className="text-[10px] font-bold text-gray-500 uppercase">Opcional: Si tienes uno, lo pondremos en tu web.</p>
-                </div>
-                <input type="file" accept="image/*" onChange={handleLogoUpload} className="text-xs max-w-[150px]" />
+              <div>
+                <h3 className="font-black text-sm uppercase flex items-center gap-2"><ImageIcon size={18} /> Logo de tu marca</h3>
+                <p className="text-[10px] font-bold text-gray-500 uppercase">Opcional: Si tienes uno, lo pondremos en tu web.</p>
+              </div>
+              <input type="file" accept="image/*" onChange={handleLogoUpload} className="text-xs max-w-[150px]" />
             </div>
 
             {/* Sección: Dolores con Chips */}
             <div className="space-y-6 pt-4">
               <h3 className="text-xl font-black uppercase text-nounRed border-b-4 border-nounRed inline-block mb-2">3. Tus Desafíos</h3>
-              
+
               <div className="space-y-2">
                 <label className="font-black text-sm uppercase">¿Qué es lo más difícil de vender? *</label>
                 {renderChips(MARKET_OPTS, 'painPointMarket')}
@@ -217,14 +221,14 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 mt-8">
-                <button type="button" onClick={onBack} className="flex-1 bg-white border-4 border-black font-bold py-4 text-xl hover:bg-gray-100 transition-colors">ATRÁS</button>
-                <Button 
-                  type="submit" 
-                  className={`flex-[2] text-2xl ${(isChecking || !isUrlValid) ? 'opacity-50 cursor-not-allowed grayscale' : ''}`} 
-                  disabled={isLoading || isChecking || !isUrlValid}
-                >
-                  {isLoading ? 'ENVIANDO...' : 'CREAR MI WEB'}
-                </Button>
+              <button type="button" onClick={onBack} className="flex-1 bg-white border-4 border-black font-bold py-4 text-xl hover:bg-gray-100 transition-colors">ATRÁS</button>
+              <Button
+                type="submit"
+                className={`flex-[2] text-2xl ${(isChecking || !isUrlValid) ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+                disabled={isLoading || isChecking || !isUrlValid}
+              >
+                {isLoading ? 'ENVIANDO...' : 'CREAR MI WEB'}
+              </Button>
             </div>
           </form>
         </BlockCard>
