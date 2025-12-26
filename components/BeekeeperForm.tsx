@@ -3,15 +3,20 @@ import React, { useState, useEffect } from 'react';
 import { BeekeeperInput } from '../types';
 import { Button } from './Button';
 import { BlockCard } from './BlockCard';
-import { Info, Image as ImageIcon, Instagram, AlertCircle, CheckCircle2, Loader2, ShieldCheck } from 'lucide-react';
+import { Info, Image as ImageIcon, Instagram, AlertCircle, CheckCircle2, Loader2, ShieldCheck, XCircle } from 'lucide-react';
 
 interface Props {
   onSubmit: (data: BeekeeperInput) => void;
   isLoading: boolean;
   onBack: () => void;
+  error?: string | null;
 }
 
-export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack }) => {
+const MARKET_OPTS = ["Precios muy bajos", "Intermediarios abusan", "Miel adulterada compite", "Poca venta local"];
+const TRACE_OPTS = ["Certificaciones caras", "Mucho papeleo", "Clientes no confían", "Cuaderno se pierde"];
+const MONEY_OPTS = ["Sin acceso a crédito", "Pagos muy lentos", "Inversión alta", "Costos suben"];
+
+export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, error }) => {
   const [formData, setFormData] = useState<BeekeeperInput>({
     name: '', farmName: '', location: '', painPointMarket: '',
     painPointTraceability: '', painPointMoney: '', socialUrl: '', logo: ''
@@ -23,11 +28,8 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack }) 
 
   const validateUrl = (url: string) => {
     if (!url) return false;
-    // Regex para detectar perfiles reales de redes sociales comunes
     const socialPattern = /^(https?:\/\/)?(www\.)?(instagram\.com|facebook\.com|fb\.me|twitter\.com|x\.com|tiktok\.com|youtube\.com|linkedin\.com)\/[a-zA-Z0-9_.-]+\/?$/i;
-    // Regex genérico para sitios web de apiarios
     const webPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
-    
     return socialPattern.test(url) || (webPattern.test(url) && url.includes('.'));
   };
 
@@ -44,7 +46,7 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack }) 
           setUrlError("El enlace no parece un perfil real. Usa: instagram.com/usuario");
         }
         setIsChecking(false);
-      }, 800); // Simulamos una verificación de red
+      }, 800);
 
       return () => clearTimeout(timer);
     } else {
@@ -56,6 +58,15 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack }) 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const setPainPoint = (field: keyof BeekeeperInput, value: string) => {
+    // Si ya contiene el valor, no lo duplicamos
+    const current = formData[field] as string;
+    if (current.includes(value)) return;
+    
+    const newValue = current ? `${current}, ${value}` : value;
+    setFormData({ ...formData, [field]: newValue });
   };
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,12 +84,37 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack }) 
     onSubmit(formData);
   };
 
+  const renderChips = (options: string[], field: keyof BeekeeperInput) => (
+    <div className="flex flex-wrap gap-2 mb-2">
+      {options.map(opt => (
+        <button
+          key={opt}
+          type="button"
+          onClick={() => setPainPoint(field, opt)}
+          className="text-[10px] md:text-xs font-bold uppercase px-3 py-1 bg-gray-100 border-2 border-gray-300 hover:bg-nounYellow hover:border-black hover:-translate-y-0.5 transition-all text-gray-600 hover:text-black rounded-full"
+        >
+          + {opt}
+        </button>
+      ))}
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-nounOffWhite py-8 px-4 flex flex-col items-center justify-center font-sans">
       <div className="max-w-3xl w-full">
         <BlockCard className="bg-white">
           <h2 className="text-3xl md:text-5xl font-black mb-8 text-center uppercase pixel-font">El Intercambio</h2>
           
+          {error && (
+            <div className="mb-6 bg-red-100 border-4 border-nounRed p-4 flex items-center gap-3 animate-pulse">
+                <XCircle className="text-nounRed w-8 h-8" />
+                <div>
+                    <h4 className="font-black uppercase text-nounRed text-sm">Error de la Colmena</h4>
+                    <p className="text-xs font-bold text-red-800">{error}</p>
+                </div>
+            </div>
+          )}
+
           <div className="mb-8 p-4 bg-nounYellow border-4 border-black shadow-hard-sm flex gap-4 items-start">
             <Info className="w-8 h-8 flex-shrink-0" />
             <p className="font-bold">Este es un trato: tú nos das datos reales de tu trabajo, nosotros te damos tecnología de punta. <span className="text-nounRed underline">La red social es obligatoria</span> para verificar que eres un apicultor real.</p>
@@ -156,23 +192,28 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack }) 
                 <input type="file" accept="image/*" onChange={handleLogoUpload} className="text-xs max-w-[150px]" />
             </div>
 
-            {/* Sección: Dolores */}
-            <div className="space-y-4 pt-4">
+            {/* Sección: Dolores con Chips */}
+            <div className="space-y-6 pt-4">
               <h3 className="text-xl font-black uppercase text-nounRed border-b-4 border-nounRed inline-block mb-2">3. Tus Desafíos</h3>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="font-black text-sm uppercase">¿Qué es lo más difícil de vender tu miel? *</label>
-                  <textarea required name="painPointMarket" value={formData.painPointMarket} onChange={handleChange} className="w-full border-4 border-black p-3 font-bold h-20 outline-none focus:bg-nounYellow/5" />
-                </div>
-                <div className="space-y-2">
-                  <label className="font-black text-sm uppercase">¿Te piden certificaciones que no tienes? *</label>
-                  <textarea required name="painPointTraceability" value={formData.painPointTraceability} onChange={handleChange} className="w-full border-4 border-black p-3 font-bold h-20 outline-none focus:bg-nounYellow/5" />
-                </div>
-                <div className="space-y-2">
-                  <label className="font-black text-sm uppercase">¿Es difícil conseguir dinero para crecer? *</label>
-                  <textarea required name="painPointMoney" value={formData.painPointMoney} onChange={handleChange} className="w-full border-4 border-black p-3 font-bold h-20 outline-none focus:bg-nounYellow/5" />
-                </div>
+              
+              <div className="space-y-2">
+                <label className="font-black text-sm uppercase">¿Qué es lo más difícil de vender? *</label>
+                {renderChips(MARKET_OPTS, 'painPointMarket')}
+                <textarea required name="painPointMarket" value={formData.painPointMarket} onChange={handleChange} className="w-full border-4 border-black p-3 font-bold h-20 outline-none focus:bg-nounYellow/5" placeholder="Selecciona opciones o escribe aquí..." />
               </div>
+
+              <div className="space-y-2">
+                <label className="font-black text-sm uppercase">¿Problemas con trazabilidad? *</label>
+                {renderChips(TRACE_OPTS, 'painPointTraceability')}
+                <textarea required name="painPointTraceability" value={formData.painPointTraceability} onChange={handleChange} className="w-full border-4 border-black p-3 font-bold h-20 outline-none focus:bg-nounYellow/5" placeholder="Selecciona opciones o escribe aquí..." />
+              </div>
+
+              <div className="space-y-2">
+                <label className="font-black text-sm uppercase">¿Problemas financieros? *</label>
+                {renderChips(MONEY_OPTS, 'painPointMoney')}
+                <textarea required name="painPointMoney" value={formData.painPointMoney} onChange={handleChange} className="w-full border-4 border-black p-3 font-bold h-20 outline-none focus:bg-nounYellow/5" placeholder="Selecciona opciones o escribe aquí..." />
+              </div>
+
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 mt-8">
