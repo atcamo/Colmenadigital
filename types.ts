@@ -8,6 +8,7 @@ export interface BeekeeperInput {
   painPointMoney: string;
   socialUrl: string; // Ahora es obligatorio
   logo?: string;
+  wantsToSellOnline?: boolean;
 }
 
 export interface GeneratedWebProfile {
@@ -16,7 +17,9 @@ export interface GeneratedWebProfile {
   aboutUsText: string;
   valueProposition: string[];
   strategicAnalysis: string;
-  farcasterHandle: string; // Nueva propiedad
+  farcasterHandle: string;
+  heroImage?: string;
+  galleryImages?: string[];
 }
 
 export enum AppState {

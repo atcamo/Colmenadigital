@@ -19,7 +19,8 @@ const MONEY_OPTS = ["Sin acceso a crédito", "Pagos muy lentos", "Inversión alt
 export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, error }) => {
   const [formData, setFormData] = useState<BeekeeperInput>({
     name: '', farmName: '', location: '', painPointMarket: '',
-    painPointTraceability: '', painPointMoney: '', socialUrl: '', logo: ''
+    painPointTraceability: '', painPointMoney: '', socialUrl: '', logo: '',
+    wantsToSellOnline: false
   });
 
   const [urlError, setUrlError] = useState<string | null>(null);
@@ -197,8 +198,8 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
                   value={formData.socialUrl}
                   onChange={handleChange}
                   placeholder="instagram.com/tu_marca"
-                  className={`w - full border - 4 p - 3 pl - 12 font - bold text - lg outline - none transition - all ${isChecking ? 'border-gray-300 opacity-50' :
-                      (formData.socialUrl ? (isUrlValid ? 'border-nounBlue bg-white' : 'border-nounRed bg-white') : 'border-black bg-white')
+                  className={`w-full border-4 p-3 pl-12 font-bold text-lg outline-none transition-all ${isChecking ? 'border-gray-300 opacity-50' :
+                    (formData.socialUrl ? (isUrlValid ? 'border-nounBlue bg-white' : 'border-nounRed bg-white') : 'border-black bg-white')
                     } `}
                 />
               </div>
@@ -225,11 +226,6 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
                 <textarea required name="painPointMarket" value={formData.painPointMarket} onChange={handleChange} className="w-full border-4 border-black p-3 font-bold h-20 outline-none focus:bg-nounYellow/5" placeholder="Selecciona opciones o escribe aquí..." />
               </div>
 
-              <div className="space-y-2">
-                <label className="font-black text-sm uppercase">¿Problemas con trazabilidad? *</label>
-                {renderChips(TRACE_OPTS, 'painPointTraceability')}
-                <textarea required name="painPointTraceability" value={formData.painPointTraceability} onChange={handleChange} className="w-full border-4 border-black p-3 font-bold h-20 outline-none focus:bg-nounYellow/5" placeholder="Selecciona opciones o escribe aquí..." />
-              </div>
 
               <div className="space-y-2">
                 <label className="font-black text-sm uppercase">¿Problemas financieros? *</label>
@@ -237,6 +233,25 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
                 <textarea required name="painPointMoney" value={formData.painPointMoney} onChange={handleChange} className="w-full border-4 border-black p-3 font-bold h-20 outline-none focus:bg-nounYellow/5" placeholder="Selecciona opciones o escribe aquí..." />
               </div>
 
+            </div>
+
+            {/* Sección: Venta Online */}
+            <div className="p-6 bg-stone-900 text-white border-4 border-amber-500 shadow-hard-sm mb-6">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex-1">
+                  <h3 className="text-xl font-black uppercase text-amber-500 mb-1">Venta Directa</h3>
+                  <p className="text-xs font-bold leading-tight opacity-80 uppercase">¿Quieres que tu página permita a los clientes comprar tus productos directamente?</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, wantsToSellOnline: !prev.wantsToSellOnline }))}
+                  className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none border-2 border-white ${formData.wantsToSellOnline ? 'bg-amber-500' : 'bg-stone-700'}`}
+                >
+                  <span
+                    className={`${formData.wantsToSellOnline ? 'translate-x-7' : 'translate-x-1'} inline-block h-5 w-5 transform rounded-full bg-white transition-transform`}
+                  />
+                </button>
+              </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 mt-8">

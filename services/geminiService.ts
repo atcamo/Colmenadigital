@@ -19,8 +19,10 @@ export const generateWebProfile = async (input: BeekeeperInput): Promise<Generat
     
     IMPORTANTE: 
     - Genera el contenido principal en ESPAÑOL. 
-    - El farcasterHandle debe seguir las reglas de Farcaster (minúsculas, sin espacios, máximo 16 caracteres). NO incluyas el símbolo "@" al inicio, solo el texto.
-    - Si los desafíos del usuario son muy cortos (ej: "no", "nada", "sí"), ignóralos y crea una estrategia basada en los desafíos comunes de la apicultura artesanal (trazabilidad, precio justo, intermediarios).
+    - El farcasterHandle debe ser corto y directo (ej: mieldelnorte, beearturo). EVITA sufijos como _cl, _oficial o similares. NO incluyas el símbolo "@" al inicio.
+    - El estilo de los textos debe ser PREMIUM, profesional y evocador, resaltando la calidad artesanal de la miel.
+    - NO menciones "Blockchain", "Cripto" ni "Trazabilidad Tecnológica" en los textos. Enfócate en el valor del producto y el trabajo del apicultor.
+    - Si los desafíos del usuario son muy cortos, ignóralos y crea una estrategia basada en los desafíos comunes de la apicultura artesanal.
   `;
 
   const userPrompt = `
@@ -29,16 +31,16 @@ export const generateWebProfile = async (input: BeekeeperInput): Promise<Generat
     - Nombre del Apiario: ${input.farmName}
     - Ubicación: ${input.location}
     - Problema de Mercado: ${input.painPointMarket}
-    - Problema de Trazabilidad: ${input.painPointTraceability}
     - Problema Financiero: ${input.painPointMoney}
+    - Interés en Venta Directa Online: ${input.wantsToSellOnline ? 'SÍ' : 'NO AÚN'}
 
     Instrucciones:
     1. Genera un Hero Title elegante.
     2. Un Tagline que inspire confianza.
     3. Un texto de "Sobre Nosotros" de 2 frases.
     4. 3 propuestas de valor cortas.
-    5. Un análisis estratégico de cómo BeeNouns resuelve su problema de trazabilidad con blockchain.
-    6. Propón un nombre de usuario (handle) para Farcaster que sea único y represente al apiario (ej: mieldelnorte o beepedro). SIN EL @.
+    5. Un análisis estratégico de cómo mejorar su rentabilidad vendiendo directo al consumidor y posicionando su marca como producto premium.
+    6. Propón un nombre de usuario (handle) para Farcaster que sea corto y directo. SIN EL @.
   `;
 
   const RETRIES = 3;
