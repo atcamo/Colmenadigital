@@ -5,9 +5,9 @@ import { BeekeeperInput, GeneratedWebProfile } from "../types";
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const generateWebProfile = async (input: BeekeeperInput): Promise<GeneratedWebProfile> => {
-  const apiKey = process.env.API_KEY;
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   if (!apiKey) {
-    throw new Error("Falta la API Key. Configura GEMINI_API_KEY en tu archivo .env");
+    throw new Error("Falta la API Key. Configura VITE_GEMINI_API_KEY en las variables de entorno.");
   }
 
   const ai = new GoogleGenAI({ apiKey });
