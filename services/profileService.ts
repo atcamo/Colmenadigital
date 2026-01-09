@@ -4,6 +4,10 @@ import { GeneratedWebProfile, BeekeeperInput } from '../types';
 
 export const profileService = {
   async saveProfile(userId: string, profile: GeneratedWebProfile, inputData: BeekeeperInput) {
+    if (!supabase) {
+      console.warn("Supabase no está configurado. No se pudo guardar el perfil.");
+      return null;
+    }
     const { data, error } = await supabase
       .from('beekeepers')
       .upsert({
@@ -18,6 +22,9 @@ export const profileService = {
   },
 
   async getProfile(userId: string) {
+    if (!supabase) {
+      return null;
+    }
     const { data, error } = await supabase
       .from('beekeepers')
       .select('*')
