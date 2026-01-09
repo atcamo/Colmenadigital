@@ -1,10 +1,13 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from './services/supabase';
+import { User } from '@supabase/supabase-js';
 import { Hero } from './components/Hero';
 import { BeekeeperForm } from './components/BeekeeperForm';
 import { WebPreview } from './components/WebPreview';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
+import { SocialAuthModal } from './components/SocialAuthModal';
 import { AppState, BeekeeperInput, GeneratedWebProfile } from './types';
 import { generateWebProfile } from './services/geminiService';
 import { Loader2 } from 'lucide-react';
@@ -15,6 +18,23 @@ const App: React.FC = () => {
   const [profile, setProfile] = useState<GeneratedWebProfile | null>(null);
   const [originalProfile, setOriginalProfile] = useState<GeneratedWebProfile | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  useEffect(() => {
+    // Escuchar cambios en la autenticación
+    if (supabase) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setUser(session?.user ?? null);
+      });
+
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        setUser(session?.user ?? null);
+      });
+
+      return () => subscription.unsubscribe();
+    }
+  }, []);
 
   const handleStartForm = () => {
     setError(null);
@@ -55,6 +75,8 @@ const App: React.FC = () => {
         currentState={state}
         onGoHome={handleGoHome}
         onBack={handleBack}
+        user={user}
+        onLogin={() => setIsAuthModalOpen(true)}
       />
 
       <div className="flex-grow">
@@ -93,11 +115,19 @@ const App: React.FC = () => {
             onUpdateProfile={handleProfileUpdate}
             onResetProfile={handleResetToOriginal}
             isModified={JSON.stringify(profile) !== JSON.stringify(originalProfile)}
+            user={user}
+            onLogin={() => setIsAuthModalOpen(true)}
           />
         )}
       </div>
 
       <Footer />
+
+      <SocialAuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        farmName={inputData?.farmName || "tu Marca"}
+      />
     </main>
   );
 };

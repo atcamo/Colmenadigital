@@ -13,15 +13,18 @@ interface Props {
     onEditInputs: () => void;
     onUpdateProfile: (p: GeneratedWebProfile) => void;
     onResetProfile: () => void;
+    onLogin: () => void;
     isModified: boolean;
+    user: User | null;
 }
 
+import { User } from '@supabase/supabase-js';
+
 export const WebPreview: React.FC<Props> = ({
-    profile, inputData, onUpdateProfile, onResetProfile, isModified
+    profile, inputData, onUpdateProfile, onResetProfile, isModified, user, onLogin
 }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [tempProfile, setTempProfile] = useState<GeneratedWebProfile>(profile);
-    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const heroInputRef = useRef<HTMLInputElement>(null);
     const galleryInputRef = useRef<HTMLInputElement>(null);
 
@@ -373,9 +376,28 @@ export const WebPreview: React.FC<Props> = ({
 
                     <BlockCard className="bg-nounYellow">
                         <h3 className="text-xl font-black uppercase mb-2 pixel-font tracking-tighter">¿Todo listo?</h3>
-                        <p className="mb-6 text-xs font-bold leading-tight">Al publicar, tu web estará disponible para todo el mundo bajo tu nombre @{cleanHandle}.</p>
-                        <Button fullWidth onClick={() => setIsAuthModalOpen(true)} className="text-sm py-4">
-                            PUBLICAR MI PÁGINA
+                        <p className="mb-6 text-xs font-bold leading-tight">
+                            {user
+                                ? "Tu sesión está activa. Al publicar, guardaremos los cambios en tu cuenta."
+                                : `Al publicar, tu web estará disponible para todo el mundo bajo tu nombre @${cleanHandle}.`}
+                        </p>
+                        <Button
+                            fullWidth
+                            onClick={async () => {
+                                if (!user) {
+                                    onLogin();
+                                } else {
+                                    try {
+                                        await profileService.saveProfile(user.id, profile, inputData);
+                                        alert("¡Publicado con éxito!");
+                                    } catch (err: any) {
+                                        alert("Error al guardar: " + err.message);
+                                    }
+                                }
+                            }}
+                            className="text-sm py-4"
+                        >
+                            {user ? 'GUARDAR CAMBIOS' : 'PUBLICAR MI PÁGINA'}
                         </Button>
                     </BlockCard>
 
@@ -386,26 +408,6 @@ export const WebPreview: React.FC<Props> = ({
                     </div>
                 </div>
             </div>
-            <SocialAuthModal
-                isOpen={isAuthModalOpen}
-                onClose={() => setIsAuthModalOpen(false)}
-                farmName={inputData.farmName}
-                onSelectProvider={async (provider) => {
-                    try {
-                        console.log(`Intentando guardar con provider: ${provider}`);
-                        // Para el MVP, usamos el handle de la red social como identificador
-                        const identifier = inputData.socialUrl.split('/').pop() || inputData.name;
-
-                        await profileService.saveProfile(identifier, profile, inputData);
-
-                        alert(`¡ÉXITO! Tu web "${inputData.farmName}" ha sido publicada y vinculada a tu cuenta de ${provider.toUpperCase()}.`);
-                        setIsAuthModalOpen(false);
-                    } catch (err: any) {
-                        console.error("Error al publicar:", err);
-                        alert("Hubo un problema al publicar. Revisa la consola para más detalles.");
-                    }
-                }}
-            />
         </div>
     );
 };

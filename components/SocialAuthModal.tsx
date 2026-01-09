@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { BlockCard } from './BlockCard';
-import { X as XIcon, Instagram, Zap, ShieldCheck, ArrowRight } from 'lucide-react';
+import { X as XIcon, Instagram, Zap, ShieldCheck, ArrowRight, Mail, Loader2, CheckCircle2 } from 'lucide-react';
+import { supabase } from '../services/supabase';
 
 interface Props {
   isOpen: boolean;
@@ -10,7 +11,46 @@ interface Props {
   farmName: string;
 }
 
-export const SocialAuthModal: React.FC<Props> = ({ isOpen, onClose, onSelectProvider, farmName }) => {
+export const SocialAuthModal: React.FC<Props> = ({ isOpen, onClose, farmName }) => {
+  const [email, setEmail] = React.useState('');
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [message, setMessage] = React.useState<string | null>(null);
+
+  const handleEmailLogin = async () => {
+    if (!supabase) return;
+    setIsLoading(true);
+    setMessage(null);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: window.location.origin,
+        }
+      });
+      if (error) throw error;
+      setMessage("¡Link enviado! Revisa tu email.");
+    } catch (err: any) {
+      alert(err.message || "Error al enviar el link");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onSelectProvider = async (provider: string) => {
+    if (!supabase) return;
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: provider as any,
+        options: {
+          redirectTo: window.location.origin,
+        }
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      alert(err.message || `Error al conectar con ${provider}`);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -35,58 +75,69 @@ export const SocialAuthModal: React.FC<Props> = ({ isOpen, onClose, onSelectProv
           </div>
 
           <div className="space-y-4">
-            {/* Instagram */}
-            <button
-              onClick={() => onSelectProvider('instagram')}
-              className="w-full group flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-pink-50 border-4 border-black shadow-hard-sm hover:-translate-y-1 hover:shadow-hard active:translate-y-0 active:shadow-none transition-all"
-            >
-              <div className="flex items-center gap-4">
-                <div className="bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 p-2 text-white border-2 border-black">
-                  <Instagram size={24} />
+            {/* Login con Email (Magic Link) - RECOMENDADO */}
+            <div className="p-4 border-4 border-black bg-nounYellow/5 space-y-3">
+              <p className="font-black uppercase text-[10px] text-gray-400 tracking-widest">Acceso Directo (Recomendado)</p>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                  <input
+                    type="email"
+                    placeholder="tu@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full border-2 border-black p-2 pl-10 font-bold text-sm outline-none focus:bg-white"
+                  />
                 </div>
-                <div className="text-left">
-                  <p className="font-black uppercase text-sm">Instagram</p>
-                  <p className="text-[10px] font-bold text-gray-500">ACCESO RÁPIDO</p>
-                </div>
+                <button
+                  disabled={isLoading || !email}
+                  onClick={handleEmailLogin}
+                  className="bg-black text-white px-4 py-2 font-black text-xs uppercase hover:bg-nounRed disabled:opacity-50 transition-colors flex items-center gap-2 shadow-hard-sm active:translate-y-0.5 active:shadow-none"
+                >
+                  {isLoading ? <Loader2 className="animate-spin" size={14} /> : "Entrar"}
+                </button>
               </div>
-              <ArrowRight className="text-black/20 group-hover:text-black transition-colors" />
-            </button>
+              {message && (
+                <div className="flex items-center gap-2 text-[10px] font-black uppercase text-nounBlue animate-pulse">
+                  <CheckCircle2 size={14} /> {message}
+                </div>
+              )}
+            </div>
 
-            {/* X (Twitter) */}
-            <button
-              onClick={() => onSelectProvider('x')}
-              className="w-full group flex items-center justify-between p-4 bg-gray-50 border-4 border-black shadow-hard-sm hover:-translate-y-1 hover:shadow-hard active:translate-y-0 active:shadow-none transition-all"
-            >
-              <div className="flex items-center gap-4">
-                <div className="bg-black p-2 text-white border-2 border-black">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                  </svg>
-                </div>
-                <div className="text-left">
-                  <p className="font-black uppercase text-sm">X (Twitter)</p>
-                  <p className="text-[10px] font-bold text-gray-500">PARA APICULTORES MODERNOS</p>
-                </div>
-              </div>
-              <ArrowRight className="text-black/20 group-hover:text-black transition-colors" />
-            </button>
+            <div className="relative py-2 flex items-center">
+              <div className="flex-grow border-t-2 border-black/10"></div>
+              <span className="flex-shrink mx-4 text-[10px] font-black text-gray-300 uppercase">O usa tus redes</span>
+              <div className="flex-grow border-t-2 border-black/10"></div>
+            </div>
 
-            {/* Farcaster */}
-            <button
-              onClick={() => onSelectProvider('farcaster')}
-              className="w-full group flex items-center justify-between p-4 bg-[#f1edfb] border-4 border-black shadow-hard-sm hover:-translate-y-1 hover:shadow-hard active:translate-y-0 active:shadow-none transition-all"
-            >
-              <div className="flex items-center gap-4">
-                <div className="bg-[#855DCD] p-2 text-white border-2 border-black">
-                  <Zap size={24} />
-                </div>
-                <div className="text-left">
-                  <p className="font-black uppercase text-sm">Farcaster</p>
-                  <p className="text-[10px] font-black text-[#855DCD]">WEB3 NATIVE</p>
-                </div>
-              </div>
-              <ArrowRight className="text-black/20 group-hover:text-black transition-colors" />
-            </button>
+            <div className="grid grid-cols-3 gap-3">
+              {/* Instagram */}
+              <button
+                onClick={() => onSelectProvider('instagram')}
+                className="flex flex-col items-center gap-2 p-3 border-2 border-black hover:bg-pink-50 transition-colors shadow-hard-sm"
+              >
+                <Instagram size={20} />
+                <span className="text-[8px] font-black uppercase">IG</span>
+              </button>
+
+              {/* X */}
+              <button
+                onClick={() => onSelectProvider('x')}
+                className="flex flex-col items-center gap-2 p-3 border-2 border-black hover:bg-gray-100 transition-colors shadow-hard-sm"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+                <span className="text-[8px] font-black uppercase">X</span>
+              </button>
+
+              {/* Farcaster */}
+              <button
+                onClick={() => onSelectProvider('farcaster')}
+                className="flex flex-col items-center gap-2 p-3 border-2 border-black border-dashed opacity-50 cursor-not-allowed"
+              >
+                <Zap size={20} />
+                <span className="text-[8px] font-black uppercase">Soon</span>
+              </button>
+            </div>
           </div>
 
           <div className="mt-8 flex gap-3 p-4 bg-nounBlue/10 border-2 border-nounBlue text-nounBlue">
