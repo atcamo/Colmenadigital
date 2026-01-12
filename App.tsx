@@ -128,13 +128,18 @@ const App: React.FC = () => {
 
   const handleProfileUpdate = async (updatedProfile: GeneratedWebProfile) => {
     setProfile(updatedProfile);
-    // Si el usuario está logueado, guardamos los cambios
+    // Si el usuario está logueado, guardamos los cambios en la nube
     if (user && inputData) {
       try {
         await profileService.saveProfile(user.id, updatedProfile, inputData);
       } catch (err) {
         console.error("Error actualizando perfil:", err);
       }
+    } else if (inputData) {
+      // Si no hay usuario, guardamos en local para que no se pierdan los cambios 
+      // al recargar para el login
+      localStorage.setItem('pending_profile', JSON.stringify(updatedProfile));
+      localStorage.setItem('pending_input', JSON.stringify(inputData));
     }
   };
   const handleResetToOriginal = () => originalProfile && setProfile(originalProfile);
