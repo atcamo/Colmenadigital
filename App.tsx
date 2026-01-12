@@ -27,36 +27,66 @@ const App: React.FC = () => {
     // Escuchar cambios en la autenticación
     if (supabase) {
       supabase.auth.getSession().then(({ data: { session } }) => {
-        setUser(session?.user ?? null);
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
+        if (currentUser) {
+          syncProfileWithUser(currentUser.id);
+        }
       });
 
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-        setUser(session?.user ?? null);
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
+
+        // Si el usuario acaba de entrar (viniendo de un Magic Link o OAuth)
+        if (event === 'SIGNED_IN' && currentUser) {
+          syncProfileWithUser(currentUser.id);
+        }
       });
 
       return () => subscription.unsubscribe();
     }
   }, []);
 
-  // Cargar perfil automáticamente cuando el usuario inicia sesión
-  useEffect(() => {
-    const loadSavedProfile = async () => {
-      if (user && state === AppState.LANDING) {
-        try {
-          const savedData = await profileService.getProfile(user.id);
-          if (savedData) {
-            setProfile(savedData.profile_data);
-            setOriginalProfile(savedData.profile_data);
-            setInputData(savedData.input_data);
-            setState(AppState.RESULT);
-          }
-        } catch (err) {
-          console.error("Error cargando perfil guardado:", err);
-        }
+  // Función para sincronizar datos locales con el servidor cuando el usuario se loguea
+  const syncProfileWithUser = async (userId: string) => {
+    try {
+      // 1. Intentar cargar perfil guardado en la nube
+      const savedData = await profileService.getProfile(userId);
+
+      // 2. Revisar si hay cambios locales pendientes de guardar (hechos justo antes de loguearse)
+      const localProfile = localStorage.getItem('pending_profile');
+      const localInput = localStorage.getItem('pending_input');
+
+      if (localProfile && localInput) {
+        const p = JSON.parse(localProfile);
+        const i = JSON.parse(localInput);
+
+        // Guardamos lo que el usuario estaba editando localmente en la base de datos
+        await profileService.saveProfile(userId, p, i);
+
+        // Limpiamos local
+        localStorage.removeItem('pending_profile');
+        localStorage.removeItem('pending_input');
+
+        // Actualizamos estado
+        setProfile(p);
+        setOriginalProfile(p);
+        setInputData(i);
+        setState(AppState.RESULT);
+      } else if (savedData) {
+        // Si no hay nada local pero sí en la nube, cargamos lo de la nube
+        setProfile(savedData.profile_data);
+        setOriginalProfile(savedData.profile_data);
+        setInputData(savedData.input_data);
+        setState(AppState.RESULT);
       }
-    };
-    loadSavedProfile();
-  }, [user]);
+    } catch (err) {
+      console.error("Error sincronizando perfil:", err);
+    }
+  };
+
+  // Eliminar el useEffect anterior de cargar perfil y usar syncProfileWithUser
 
   const handleStartForm = () => {
     setError(null);
@@ -84,6 +114,10 @@ const App: React.FC = () => {
       // Si el usuario está logueado, guardamos automáticamente
       if (user) {
         await profileService.saveProfile(user.id, result, data);
+      } else {
+        // Si no está logueado, guardamos en localStorage para cuando se loguee
+        localStorage.setItem('pending_profile', JSON.stringify(result));
+        localStorage.setItem('pending_input', JSON.stringify(data));
       }
     } catch (error: any) {
       console.error(error);
