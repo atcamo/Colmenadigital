@@ -5,9 +5,13 @@ import { BeekeeperInput, GeneratedWebProfile } from "../types";
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const generateWebProfile = async (input: BeekeeperInput): Promise<GeneratedWebProfile> => {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  // Intentamos obtener la API Key de varias fuentes para mayor robustez
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY ||
+    (typeof process !== 'undefined' ? process.env.GEMINI_API_KEY : '') ||
+    (typeof process !== 'undefined' ? process.env.API_KEY : '');
+
   if (!apiKey) {
-    throw new Error("Falta la API Key. Configura VITE_GEMINI_API_KEY en las variables de entorno.");
+    throw new Error("Falta la API Key. Configura VITE_GEMINI_API_KEY o GEMINI_API_KEY.");
   }
 
   const ai = new GoogleGenAI({ apiKey });

@@ -7,9 +7,9 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
 const MODELS_TO_TEST = [
   "gemini-1.5-flash",
+  "gemini-1.5-flash-8b",
   "gemini-1.5-pro",
   "gemini-2.0-flash-exp"
-  // Intentionally limited to likely candidates to avoid noise
 ];
 
 async function testModels() {
