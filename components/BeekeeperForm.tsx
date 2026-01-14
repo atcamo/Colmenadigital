@@ -19,11 +19,18 @@ type Step = 1 | 2 | 3 | 4;
 
 export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, error }) => {
   const [step, setStep] = useState<Step>(1);
-  const [formData, setFormData] = useState<BeekeeperInput>({
-    name: '', farmName: '', location: '', painPointMarket: '',
-    painPointTraceability: '', painPointMoney: '', socialUrl: '', logo: '',
-    wantsToSellOnline: false
+  const [formData, setFormData] = useState<BeekeeperInput>(() => {
+    const saved = localStorage.getItem('beekeeper_form_draft');
+    return saved ? JSON.parse(saved) : {
+      name: '', farmName: '', location: '', painPointMarket: '',
+      painPointTraceability: '', painPointMoney: '', socialUrl: '', logo: '',
+      wantsToSellOnline: false
+    };
   });
+
+  useEffect(() => {
+    localStorage.setItem('beekeeper_form_draft', JSON.stringify(formData));
+  }, [formData]);
 
   const [urlError, setUrlError] = useState<string | null>(null);
   const [isUrlValid, setIsUrlValid] = useState(false);
@@ -101,7 +108,10 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (step === 4) onSubmit(formData);
+    if (step === 4) {
+      localStorage.removeItem('beekeeper_form_draft');
+      onSubmit(formData);
+    }
   };
 
   const renderChips = (options: string[], field: keyof BeekeeperInput) => (
