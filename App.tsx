@@ -10,8 +10,6 @@ import { Footer } from './components/Footer';
 import { SocialAuthModal } from './components/SocialAuthModal';
 import { AppState, BeekeeperInput, GeneratedWebProfile } from './types';
 import { generateWebProfile } from './services/geminiService';
-import { Loader2, Sparkles } from 'lucide-react';
-import { NounsBee } from './components/NounsBee';
 import { profileService } from './services/profileService';
 import { LoadingState } from './components/LoadingState';
 
