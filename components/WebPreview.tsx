@@ -11,6 +11,7 @@ import {
 import { profileService } from '../services/profileService';
 import { User } from '@supabase/supabase-js';
 import { PremiumWebTemplate } from './PremiumWebTemplate';
+import { storageService } from '../services/storageService';
 
 interface Props {
     profile: GeneratedWebProfile;
@@ -40,28 +41,50 @@ export const WebPreview: React.FC<Props> = ({
         setTempProfile(prev => ({ ...prev, [field]: value }));
     };
 
-    const handleHeroUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleHeroUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             const reader = new FileReader();
-            reader.onloadend = () => handleChange('heroImage', reader.result as string);
+            reader.onloadend = async () => {
+                const base64 = reader.result as string;
+                if (user) {
+                    const publicUrl = await storageService.uploadImage(user.id, 'profiles', 'hero.png', base64);
+                    if (publicUrl) {
+                        handleChange('heroImage', publicUrl);
+                        return;
+                    }
+                }
+                handleChange('heroImage', base64);
+            };
             reader.readAsDataURL(file);
         }
     };
 
-    const handleGalleryUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (files) {
-            Array.from(files).forEach((file: File) => {
+            const newImages = [...(tempProfile.galleryImages || [])];
+            const filesArray = Array.from(files) as File[];
+
+            for (const file of filesArray) {
                 const reader = new FileReader();
-                reader.onloadend = () => {
-                    setTempProfile(prev => ({
-                        ...prev,
-                        galleryImages: [...(prev.galleryImages || []), reader.result as string]
-                    }));
-                };
+                const promise = new Promise<string>((resolve) => {
+                    reader.onloadend = () => resolve(reader.result as string);
+                });
                 reader.readAsDataURL(file);
-            });
+                const base64 = await promise;
+
+                if (user) {
+                    const fileName = `gallery_${Date.now()}_${Math.random().toString(36).substring(7)}.png`;
+                    const publicUrl = await storageService.uploadImage(user.id, 'profiles', fileName, base64);
+                    if (publicUrl) {
+                        newImages.push(publicUrl);
+                        continue;
+                    }
+                }
+                newImages.push(base64);
+            }
+            handleChange('galleryImages', newImages);
         }
     };
 

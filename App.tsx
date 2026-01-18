@@ -164,6 +164,7 @@ const App: React.FC = () => {
             isLoading={state === AppState.LOADING}
             onBack={handleBack}
             error={error}
+            user={user}
           />
         )}
 

@@ -4,12 +4,15 @@ import { BeekeeperInput } from '../types';
 import { Button } from './Button';
 import { BlockCard } from './BlockCard';
 import { Info, Image as ImageIcon, Instagram, AlertCircle, ShieldCheck, XCircle, Copy, Check, ChevronRight, ChevronLeft, User, MapPin, BadgeCheck, Zap, ShoppingBag } from 'lucide-react';
+import { storageService } from '../services/storageService';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface Props {
   onSubmit: (data: BeekeeperInput) => void;
   isLoading: boolean;
   onBack: () => void;
   error?: string | null;
+  user: SupabaseUser | null;
 }
 
 const MARKET_OPTS = ["Precios muy bajos", "Intermediarios abusan", "Miel adulterada compite", "Poca venta local"];
@@ -17,7 +20,7 @@ const MONEY_OPTS = ["Sin acceso a crédito", "Pagos muy lentos", "Inversión alt
 
 type Step = 1 | 2 | 3 | 4;
 
-export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, error }) => {
+export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, error, user }) => {
   const [step, setStep] = useState<Step>(1);
   const [formData, setFormData] = useState<BeekeeperInput>(() => {
     const saved = localStorage.getItem('beekeeper_form_draft');
@@ -78,11 +81,21 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
     setFormData({ ...formData, [field]: newValue });
   };
 
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => setFormData({ ...formData, logo: reader.result as string });
+      reader.onloadend = async () => {
+        const base64 = reader.result as string;
+        if (user) {
+          const publicUrl = await storageService.uploadImage(user.id, 'profiles', 'logo.png', base64);
+          if (publicUrl) {
+            setFormData({ ...formData, logo: publicUrl });
+            return;
+          }
+        }
+        setFormData({ ...formData, logo: base64 });
+      };
       reader.readAsDataURL(file);
     }
   };

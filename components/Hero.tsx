@@ -108,6 +108,39 @@ export const Hero: React.FC<HeroProps> = ({ onStart }) => {
       {/* SECCIÓN AMARILLA - CAPA SUPERIOR (z-20) */}
       <section className="py-24 px-4 relative z-20 border-t-4 border-black bg-nounYellow shadow-[0_-20px_50px_rgba(0,0,0,0.1)]">
         <div className="max-w-6xl mx-auto">
+
+          {/* SOBRE NOSOTROS */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-32">
+            <div className="order-2 md:order-1">
+              <h2 className="text-4xl md:text-5xl font-black uppercase pixel-font mb-6 leading-tight">
+                Empoderando al <span className="text-nounRed">Corazón</span> de la Colmena
+              </h2>
+              <div className="space-y-4 text-xl font-bold leading-relaxed">
+                <p>
+                  En <span className="pixel-font text-sm">BeeNouns</span>, creemos que la tecnología no debería ser una barrera, sino un puente. Intercambiamos conocimiento por empoderamiento.
+                </p>
+                <p>
+                  Nuestra misión es llevar la autenticidad del campo a la frontera digital, protegiendo a los apicultores locales frente a un mercado saturado de intermediarios y fraudes.
+                </p>
+              </div>
+            </div>
+            <div className="order-1 md:order-2 flex justify-center">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-black translate-x-4 translate-y-4 group-hover:translate-x-2 group-hover:translate-y-2 transition-transform"></div>
+                <div className="relative bg-white border-4 border-black p-4">
+                  <img
+                    src="https://images.unsplash.com/photo-1587334274328-64186a80aeee?q=80&w=800"
+                    alt="Apicultura Artesanal"
+                    className="w-full h-80 object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                  />
+                  <div className="absolute -bottom-6 -right-6">
+                    <NounsBee className="w-24 h-auto" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black uppercase pixel-font mb-4">Voces de la Colmena</h2>
             <p className="text-xl font-bold">Historias reales de apicultores que ya dieron el salto.</p>
