@@ -143,7 +143,20 @@ export const Hero: React.FC<HeroProps> = ({ onStart }) => {
       </div>
 
       {/* SECCIÓN 1: CUBOS 3D (CABECERA IMPACTO) */}
-      <section className="relative z-20 border-b-8 border-black shadow-2xl overflow-hidden">
+      <section className="relative z-20 border-b-8 border-black shadow-2xl overflow-hidden bg-white">
+        {/* CABECERA DE CONTEXTO (SOLUCIÓN PUNTO 1) */}
+        <div className="bg-black text-white py-12 px-4 text-center border-b-4 border-black">
+          <h1 className="text-5xl md:text-8xl font-black pixel-font mb-4 animate-in fade-in slide-in-from-top-4 duration-700">
+            EL INTERCAMBIO
+          </h1>
+          <p className="text-xl md:text-3xl font-bold uppercase tracking-widest text-amber-400">
+            Tu Miel. Tu Web. <span className="bg-amber-400 text-black px-2 mx-1">Gratis.</span>
+          </p>
+          <p className="max-w-2xl mx-auto mt-6 text-sm md:text-lg font-medium opacity-80 leading-tight">
+            No vendemos software. Construimos colmenas digitales. Intercambiamos una web de lujo por la prueba de que eres un apicultor real.
+          </p>
+        </div>
+
         <style dangerouslySetInnerHTML={{
           __html: `
           .perspective-container { perspective: 2000px; }

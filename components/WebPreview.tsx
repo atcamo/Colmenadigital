@@ -197,13 +197,13 @@ export const WebPreview: React.FC<Props> = ({
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="bg-gray-50 p-3 border-2 border-black shadow-sm">
                                     <CheckCircle2 size={16} className="text-nounBlue mb-2" />
-                                    <p className="text-[9px] font-black uppercase mb-1">Posicionamiento</p>
-                                    <p className="text-[10px] font-bold text-gray-600">Premium & Directo</p>
+                                    <p className="text-[9px] font-black uppercase mb-1">Propuesta</p>
+                                    <p className="text-[10px] font-bold text-gray-600">Venta Directa</p>
                                 </div>
                                 <div className="bg-gray-50 p-3 border-2 border-black shadow-sm">
                                     <ShieldCheck size={16} className="text-nounRed mb-2" />
-                                    <p className="text-[9px] font-black uppercase mb-1">Confianza</p>
-                                    <p className="text-[10px] font-bold text-gray-600">Verificado Web3</p>
+                                    <p className="text-[9px] font-black uppercase mb-1">Garantía</p>
+                                    <p className="text-[10px] font-bold text-gray-600">Sello de Calidad</p>
                                 </div>
                             </div>
                         </div>
@@ -265,7 +265,7 @@ export const WebPreview: React.FC<Props> = ({
                                             }
                                         }
                                     }}
-                                    className="text-sm py-5 shadow-hard-sm hover:shadow-hard transition-all animate-pulse"
+                                    className="text-sm py-5 shadow-hard-sm hover:shadow-hard transition-all font-black"
                                 >
                                     {user ? 'GUARDAR CAMBIOS' : 'PUBLICAR PÁGINA GRATIS'}
                                 </Button>

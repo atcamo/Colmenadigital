@@ -258,9 +258,17 @@ export const PremiumWebTemplate: React.FC<Props> = ({
             </>
           )}
         </div>
-        <p className="text-[8px] md:text-[9px] font-medium text-stone-300 uppercase tracking-widest italic">
+        <p className="text-[8px] md:text-[9px] font-medium text-stone-300 uppercase tracking-widest italic mb-8">
           © {new Date().getFullYear()} {inputData.farmName} — Colección Privada
         </p>
+
+        {/* SELLO DE AUTENTICIDAD BEENOUNS (SOLUCIÓN PUNTO 5) */}
+        <div className="flex justify-center mt-12 opacity-40 hover:opacity-100 transition-opacity">
+          <div className="flex items-center gap-2 border-2 border-black px-3 py-1 bg-amber-400 rotate-1 shadow-hard-sm cursor-help">
+            <span className="text-xs">🐝</span>
+            <span className="text-[8px] font-black uppercase tracking-tighter text-black">Authentic Colmena Digital — BeeNouns CC</span>
+          </div>
+        </div>
       </footer>
     </div>
   );
