@@ -226,3 +226,97 @@
   animation: fly-around 6s infinite ease-in-out reverse;
   animation-delay: 1s;
 }
+
+/* Playful Interactive Word Animations */
+@keyframes bee-swarm-1 {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  33% {
+    transform: translate(40px, -30px) rotate(20deg);
+  }
+
+  66% {
+    transform: translate(-30px, -50px) rotate(-20deg);
+  }
+
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+}
+
+@keyframes bee-swarm-2 {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  33% {
+    transform: translate(-50px, -20px) rotate(-10deg);
+  }
+
+  66% {
+    transform: translate(30px, -40px) rotate(30deg);
+  }
+
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+}
+
+@keyframes bee-swarm-3 {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  50% {
+    transform: translate(15px, -60px) rotate(-40deg);
+  }
+
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+}
+
+.animate-bee-swarm-1 {
+  animation: bee-swarm-1 2s infinite ease-in-out;
+}
+
+.animate-bee-swarm-2 {
+  animation: bee-swarm-2 2.5s infinite ease-in-out;
+}
+
+.animate-bee-swarm-3 {
+  animation: bee-swarm-3 3s infinite ease-in-out;
+}
+
+@keyframes nouns-glitch {
+  0% {
+    text-shadow: none;
+    transform: translateX(0);
+  }
+
+  25% {
+    text-shadow: 2px 2px #E63433, -2px -2px #000;
+    transform: translateX(-1px);
+  }
+
+  50% {
+    text-shadow: -2px 2px #E63433, 2px -2px #000;
+    transform: translateX(1px);
+  }
+
+  75% {
+    text-shadow: 2px -2px #E63433, -2px 2px #000;
+    transform: translateX(-1px);
+  }
+
+  100% {
+    text-shadow: none;
+    transform: translateX(0);
+  }
+}
+
+.animate-nouns-glitch {
+  animation: nouns-glitch 0.3s infinite linear;
+}

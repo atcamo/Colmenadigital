@@ -134,7 +134,7 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
           key={opt}
           type="button"
           onClick={() => setPainPoint(field, opt)}
-          className="text-[10px] font-bold uppercase px-3 py-1 bg-gray-100 border-2 border-gray-300 hover:bg-nounYellow hover:border-black hover:-translate-y-0.5 transition-all text-gray-600 hover:text-black rounded-full"
+          className="text-xs font-black uppercase px-4 py-2 bg-gray-100 border-4 border-black hover:bg-nounYellow hover:-translate-y-1 transition-all text-black shadow-hard-sm active:translate-y-0"
         >
           + {opt}
         </button>
@@ -287,6 +287,12 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
                       <span className={`${formData.wantsToSellOnline ? 'translate-x-11' : 'translate-x-1'} inline-block h-6 w-6 transform rounded-full bg-current transition-transform`} />
                     </button>
                   </div>
+                  {formData.wantsToSellOnline && (
+                    <div className="mt-6 bg-green-500/20 border-2 border-green-500 p-3 flex items-center gap-3 animate-in zoom-in-95 duration-300">
+                      <ShieldCheck className="text-green-400" size={20} />
+                      <p className="text-[10px] font-black uppercase text-green-400">¡Excelente! Activaremos el Kit de Pago para que no pagues comisiones a bancos.</p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="bg-nounYellow/20 p-6 border-4 border-black flex gap-4 items-start">

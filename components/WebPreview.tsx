@@ -209,63 +209,77 @@ export const WebPreview: React.FC<Props> = ({
                         </div>
                     </BlockCard>
 
-                    {/* BLOQUE FARCASTER */}
-                    <BlockCard className="bg-[#855DCD] text-white border-black border-4">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-black uppercase pixel-font tracking-tighter">Identidad Social</h3>
-                            <div className="bg-white text-[#855DCD] px-2 py-0.5 rounded text-[8px] font-black uppercase">Web3</div>
-                        </div>
-                        <p className="text-xs mb-4 font-bold opacity-90 leading-tight">
-                            Tu reserva en la red de apicultores descentralizada.
+                    {/* NUEVO: BLOQUE "VER EN TU MÓVIL" (CONFIDENCIA) */}
+                    <BlockCard className="bg-white border-black border-4 p-6 flex flex-col items-center text-center">
+                        <Smartphone size={32} className="text-nounBlue mb-4" />
+                        <h3 className="text-xs font-black uppercase pixel-font mb-2">Ver en tu móvil</h3>
+                        <p className="text-[10px] font-bold text-gray-500 uppercase leading-tight mb-6">
+                            Escanea para ver cómo experimentarán tu marca tus clientes.
                         </p>
-                        <div className="bg-black/20 p-4 border-2 border-white/20 rounded-lg mb-4">
-                            <p className="text-[10px] font-black uppercase text-white/50 mb-1">Tu handle único</p>
-                            <p className="text-xl font-black lowercase font-mono">@{cleanHandle}</p>
+
+                        {/* Simulación de QR Code Brutalista */}
+                        <div className="w-32 h-32 border-4 border-black p-2 bg-white mb-6 relative group overflow-hidden">
+                            <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
+                            <div className="grid grid-cols-4 grid-rows-4 h-full w-full gap-1">
+                                {[...Array(16)].map((_, i) => (
+                                    <div key={i} className={`border border-black/10 ${Math.random() > 0.5 ? 'bg-black' : 'bg-transparent'}`}></div>
+                                ))}
+                            </div>
+                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span className="bg-white border-2 border-black px-2 py-1 font-black text-[8px] uppercase">qr-sim</span>
+                            </div>
                         </div>
+
                         <button
-                            onClick={() => window.open('https://warpcast.com/', '_blank')}
-                            className="w-full bg-white text-[#855DCD] py-3 font-black text-[10px] uppercase shadow-hard-sm active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-2"
+                            onClick={copyToClipboard}
+                            className="text-[9px] font-black uppercase underline hover:text-nounBlue transition-colors"
                         >
-                            <Share2 size={12} /> Reservar en Farcaster
+                            O copia el enlace temporal
                         </button>
                     </BlockCard>
 
-                    <BlockCard className="bg-nounYellow border-4 border-black">
-                        <h3 className="text-xl font-black uppercase mb-2 pixel-font tracking-tighter">Finalizar</h3>
-                        <p className="mb-6 text-xs font-bold leading-tight">
-                            {user
-                                ? "Guardaremos estos cambios en tu perfil de Supabase."
-                                : "Publica tu página para compartir tu historia con el mundo."}
-                        </p>
-                        <div className="space-y-3">
-                            <Button
-                                fullWidth
-                                onClick={async () => {
-                                    if (!user) {
-                                        onLogin();
-                                    } else {
-                                        try {
-                                            await profileService.saveProfile(user.id, profile, inputData);
-                                            alert("¡Publicado con éxito!");
-                                        } catch (err: any) {
-                                            alert("Error al guardar: " + err.message);
+                    {/* BLOQUE DE ACCIÓN FINAL (STICKY-LIKE) */}
+                    <div className="sticky bottom-6 z-30">
+                        <BlockCard className="bg-nounYellow border-4 border-black shadow-hard-lg scale-105">
+                            <div className="flex items-center gap-2 mb-4">
+                                <Sparkles size={16} className="animate-pulse" />
+                                <h3 className="text-lg font-black uppercase pixel-font tracking-tighter">¿Listo para lanzar?</h3>
+                            </div>
+                            <p className="mb-6 text-[10px] font-bold leading-tight uppercase">
+                                {user
+                                    ? "Tus cambios se guardarán permanentemente en la colmena."
+                                    : "Publica ahora para que el mundo descubra tu cosecha."}
+                            </p>
+                            <div className="space-y-3">
+                                <Button
+                                    fullWidth
+                                    onClick={async () => {
+                                        if (!user) {
+                                            onLogin();
+                                        } else {
+                                            try {
+                                                await profileService.saveProfile(user.id, profile, inputData);
+                                                alert("¡Publicado con éxito!");
+                                            } catch (err: any) {
+                                                alert("Error al guardar: " + err.message);
+                                            }
                                         }
-                                    }
-                                }}
-                                className="text-sm py-4"
-                            >
-                                {user ? 'GUARDAR EN LA NUBE' : 'PUBLICAR PÁGINA'}
-                            </Button>
-                            {!isEditing && (
-                                <button
-                                    onClick={copyToClipboard}
-                                    className="w-full py-3 bg-white border-4 border-black font-black text-[10px] uppercase flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
+                                    }}
+                                    className="text-sm py-5 shadow-hard-sm hover:shadow-hard transition-all animate-pulse"
                                 >
-                                    <Globe size={14} /> Copiar Link Público
-                                </button>
-                            )}
-                        </div>
-                    </BlockCard>
+                                    {user ? 'GUARDAR CAMBIOS' : 'PUBLICAR PÁGINA GRATIS'}
+                                </Button>
+                                {!isEditing && (
+                                    <button
+                                        onClick={copyToClipboard}
+                                        className="w-full py-3 bg-white border-4 border-black font-black text-[10px] uppercase flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
+                                    >
+                                        <Globe size={14} /> Link Público
+                                    </button>
+                                )}
+                            </div>
+                        </BlockCard>
+                    </div>
                 </div>
             </div>
         </div>

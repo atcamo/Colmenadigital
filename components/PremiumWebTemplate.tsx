@@ -88,7 +88,7 @@ export const PremiumWebTemplate: React.FC<Props> = ({
             </div>
           ) : (
             <>
-              <h1 className={`${isMobileView ? 'text-4xl' : 'text-6xl md:text-9xl'} font-serif font-bold text-white mb-6 md:mb-10 leading-tight tracking-tight drop-shadow-lg`}>
+              <h1 className={`${isMobileView ? 'text-4xl' : 'text-6xl md:text-9xl'} font-serif font-bold text-white mb-6 md:mb-10 leading-tight tracking-tight drop-shadow-lg break-words`}>
                 {tempProfile.heroTitle}
               </h1>
               <p className={`${isMobileView ? 'text-lg' : 'text-xl md:text-3xl'} text-stone-200/90 font-light italic max-w-3xl mx-auto leading-relaxed border-t border-white/20 pt-6 md:pt-10`}>
