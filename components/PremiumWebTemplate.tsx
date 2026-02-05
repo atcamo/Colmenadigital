@@ -44,12 +44,13 @@ export const PremiumWebTemplate: React.FC<Props> = ({
     '--brand-secondary': secondary,
   } as React.CSSProperties;
 
-  const fontHeader = isLuxury ? 'font-serif' : (isRustic ? 'font-serif' : 'font-sans');
+  const fontHeader = isLuxury ? 'font-brand-luxury' : (isRustic ? 'font-brand-rustic' : 'font-brand-modern');
+  const fontBody = (isLuxury || isRustic) ? 'font-brand-rustic' : 'font-brand-modern';
 
   return (
     <div
       style={styleStyles}
-      className={`flex-grow flex flex-col font-sans text-stone-800 bg-[#fdfcf8] overflow-y-auto ${isMobileView ? 'max-w-[375px] mx-auto border-x-4 border-black' : ''}`}
+      className={`flex-grow flex flex-col ${fontBody} text-stone-800 bg-[#fdfcf8] overflow-y-auto ${isMobileView ? 'max-w-[375px] mx-auto border-x-4 border-black' : ''}`}
     >
       {/* Contenido de la Web Generada: Estética Premium */}
       <nav className={`bg-white/80 backdrop-blur-md px-6 md:px-12 py-6 flex justify-between items-center sticky top-0 z-50 border-b border-stone-100 ${isMinimalist ? 'py-4' : ''}`}>

@@ -17,6 +17,18 @@
     font-weight: 400;
     letter-spacing: -0.05em;
   }
+
+  .font-brand-luxury {
+    font-family: 'Playfair Display', serif;
+  }
+
+  .font-brand-modern {
+    font-family: 'Outfit', sans-serif;
+  }
+
+  .font-brand-rustic {
+    font-family: 'EB Garamond', serif;
+  }
 }
 
 /* Custom Webkit scrollbar */
