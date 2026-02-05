@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { BeekeeperInput, GeneratedWebProfile } from "../types";
 
@@ -15,7 +14,7 @@ export const generateWebProfile = async (input: BeekeeperInput): Promise<Generat
   }
 
   const ai = new GoogleGenAI({ apiKey });
-  const model = "gemini-1.5-flash"; // Cambiado a 1.5-flash por ser más estable y evitar 404s comunes en 2.0-exp
+  const model = "gemini-2.0-flash"; // Cambiado a 1.5-flash por ser más estable y evitar 404s comunes en 2.0-exp
 
   const systemInstruction = `
     Eres un experto estratega de marca para productos alimenticios artesanales premium y un conocedor del ecosistema Web3 (Farcaster, Nouns, Blockchain).
