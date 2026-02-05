@@ -18,19 +18,16 @@ async function listModels() {
   try {
     console.log("Fetching models...");
     const response = await ai.models.list();
-    console.log("Raw response keys:", Object.keys(response));
 
-    // In this specific SDK, response might be a direct array or have a different structure
-    const models = response;
-    console.log("Is array:", Array.isArray(models));
+    const fs = require('fs');
+    fs.writeFileSync('models_output.json', JSON.stringify(response, null, 2));
+    console.log("Full response written to models_output.json");
 
-    if (Array.isArray(models)) {
-      console.log(`Found ${models.length} models.`);
-      models.forEach((m: any) => {
+    if (Array.isArray(response)) {
+      console.log(`Found ${response.length} models.`);
+      response.forEach((m: any) => {
         console.log(`- ${m.name}`);
       });
-    } else {
-      console.log("Response is not an array. Value:", JSON.stringify(response, null, 2));
     }
 
   } catch (error: any) {
