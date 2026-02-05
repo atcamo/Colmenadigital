@@ -20,6 +20,9 @@ export interface GeneratedWebProfile {
   farcasterHandle: string;
   heroImage?: string;
   galleryImages?: string[];
+  primaryColor?: string; // HEX
+  secondaryColor?: string; // HEX
+  styleVibe?: 'rustic' | 'minimalist' | 'luxury' | 'modern';
 }
 
 export enum AppState {

@@ -30,19 +30,42 @@ export const PremiumWebTemplate: React.FC<Props> = ({
   onRemoveGalleryImage,
   isMobileView = false
 }) => {
+  // Colores dinámicos extraídos de la IA (o fallback)
+  const primary = tempProfile.primaryColor || '#D97706'; // amber-600
+  const secondary = tempProfile.secondaryColor || '#1C1917'; // stone-900
+
+  // Estilo basado en el "Vibe"
+  const isMinimalist = tempProfile.styleVibe === 'minimalist';
+  const isLuxury = tempProfile.styleVibe === 'luxury';
+  const isRustic = tempProfile.styleVibe === 'rustic';
+
+  const styleStyles = {
+    '--brand-primary': primary,
+    '--brand-secondary': secondary,
+  } as React.CSSProperties;
+
+  const fontHeader = isLuxury ? 'font-serif' : (isRustic ? 'font-serif' : 'font-sans');
+
   return (
-    <div className={`flex-grow flex flex-col font-sans text-stone-800 bg-[#fdfcf8] overflow-y-auto ${isMobileView ? 'max-w-[375px] mx-auto border-x-4 border-black' : ''}`}>
+    <div
+      style={styleStyles}
+      className={`flex-grow flex flex-col font-sans text-stone-800 bg-[#fdfcf8] overflow-y-auto ${isMobileView ? 'max-w-[375px] mx-auto border-x-4 border-black' : ''}`}
+    >
       {/* Contenido de la Web Generada: Estética Premium */}
-      <nav className="bg-white/80 backdrop-blur-md px-6 md:px-12 py-6 flex justify-between items-center sticky top-0 z-50 border-b border-stone-100">
-        <div className="flex items-center gap-4 font-serif text-xl md:text-2xl tracking-tight text-stone-900">
+      <nav className={`bg-white/80 backdrop-blur-md px-6 md:px-12 py-6 flex justify-between items-center sticky top-0 z-50 border-b border-stone-100 ${isMinimalist ? 'py-4' : ''}`}>
+        <div className={`flex items-center gap-4 text-xl md:text-2xl tracking-tight text-stone-900 ${fontHeader}`}>
           {inputData.logo && <img src={inputData.logo} alt="Logo" className="w-10 h-10 md:w-12 md:h-12 object-contain" />}
-          <span className="font-semibold">{inputData.farmName}</span>
+          <span className="font-semibold" style={{ color: 'var(--brand-secondary)' }}>{inputData.farmName}</span>
         </div>
         {!isMobileView && (
           <div className="hidden sm:flex gap-10 text-[11px] font-semibold text-stone-500 uppercase tracking-[0.2em]">
             <span className="text-stone-900 cursor-pointer border-b border-stone-900">Inicio</span>
-            <span className="cursor-pointer hover:text-stone-900 transition-colors">Cosecha</span>
-            <span className="cursor-pointer hover:text-stone-900 transition-colors">Legado</span>
+            {!isMinimalist && (
+              <>
+                <span className="cursor-pointer hover:text-stone-900 transition-colors">Cosecha</span>
+                <span className="cursor-pointer hover:text-stone-900 transition-colors">Legado</span>
+              </>
+            )}
             {inputData.wantsToSellOnline && (
               <span className="cursor-pointer text-amber-600 hover:text-amber-700 transition-colors font-bold">Tienda</span>
             )}
@@ -53,15 +76,17 @@ export const PremiumWebTemplate: React.FC<Props> = ({
       <header className={`${isMobileView ? 'min-h-[500px]' : 'min-h-[750px]'} flex items-center justify-center py-20 md:py-32 px-6 relative overflow-hidden bg-stone-900 dark`}>
         {/* Fondo Premium con profundidad */}
         <div className="absolute inset-0 z-0 bg-stone-900">
-          {tempProfile.heroImage && (
+          {tempProfile.heroImage ? (
             <img src={tempProfile.heroImage} className="w-full h-full object-cover scale-105" alt="Hero" />
+          ) : (
+            <img src="https://images.unsplash.com/photo-1587334274328-64186a80aeee?q=80&w=2000" className="w-full h-full object-cover opacity-50 grayscale-[0.5]" alt="Honey Background" />
           )}
           <div className="absolute inset-0 bg-gradient-to-b from-stone-900/40 via-stone-900/20 to-stone-900/90"></div>
         </div>
 
         <div className="max-w-5xl mx-auto relative z-10 text-center">
           <div className="inline-flex items-center gap-3 mb-6 md:mb-10 px-4 md:px-6 py-2 bg-white/10 backdrop-blur-xl rounded-full border border-white/20">
-            <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></div>
+            <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: 'var(--brand-primary)' }}></div>
             <span className="text-white font-medium tracking-[0.3em] text-[8px] md:text-[10px] uppercase">{inputData.location}</span>
           </div>
 
@@ -77,7 +102,7 @@ export const PremiumWebTemplate: React.FC<Props> = ({
               <textarea
                 value={tempProfile.heroTitle}
                 onChange={(e) => onFieldChange('heroTitle', e.target.value)}
-                className="w-full text-3xl md:text-5xl font-serif font-bold bg-white text-stone-900 p-6 md:p-8 rounded-xl shadow-2xl"
+                className={`w-full text-3xl md:text-5xl font-bold bg-white text-stone-900 p-6 md:p-8 rounded-xl shadow-2xl ${fontHeader}`}
                 rows={2}
               />
               <input
@@ -88,7 +113,7 @@ export const PremiumWebTemplate: React.FC<Props> = ({
             </div>
           ) : (
             <>
-              <h1 className={`${isMobileView ? 'text-4xl' : 'text-6xl md:text-9xl'} font-serif font-bold text-white mb-6 md:mb-10 leading-tight tracking-tight drop-shadow-lg break-words`}>
+              <h1 className={`${isMobileView ? 'text-4xl' : 'text-6xl md:text-9xl'} font-bold text-white mb-6 md:mb-10 leading-tight tracking-tight drop-shadow-lg break-words ${fontHeader}`}>
                 {tempProfile.heroTitle}
               </h1>
               <p className={`${isMobileView ? 'text-lg' : 'text-xl md:text-3xl'} text-stone-200/90 font-light italic max-w-3xl mx-auto leading-relaxed border-t border-white/20 pt-6 md:pt-10`}>
@@ -99,7 +124,10 @@ export const PremiumWebTemplate: React.FC<Props> = ({
 
           {!isEditing && (
             <div className="mt-12 md:mt-16 flex flex-col sm:flex-row gap-4 md:gap-6 justify-center">
-              <button className="bg-amber-600/90 hover:bg-amber-600 text-white px-8 md:px-12 py-4 md:py-5 rounded-sm font-semibold text-xs md:text-sm uppercase tracking-[0.2em] transition-all shadow-xl shadow-black/20">
+              <button
+                className="text-white px-8 md:px-12 py-4 md:py-5 rounded-sm font-semibold text-xs md:text-sm uppercase tracking-[0.2em] transition-all shadow-xl shadow-black/20"
+                style={{ backgroundColor: 'var(--brand-primary)' }}
+              >
                 {inputData.wantsToSellOnline ? 'Ver Catálogo' : 'Descubrir Cosecha'}
               </button>
               <button className="bg-white/5 hover:bg-white/10 backdrop-blur-sm text-white border border-white/30 px-8 md:px-12 py-4 md:py-5 rounded-sm font-semibold text-xs md:text-sm uppercase tracking-[0.2em] transition-all">
@@ -115,13 +143,13 @@ export const PremiumWebTemplate: React.FC<Props> = ({
           <div className={`grid ${isMobileView ? 'grid-cols-1' : 'md:grid-cols-3'} gap-12 md:gap-20`}>
             {tempProfile.valueProposition.map((vp, idx) => (
               <div key={idx} className="group text-center">
-                <div className="w-16 h-16 md:w-20 md:h-20 mx-auto bg-stone-50 border border-stone-100 rounded-full flex items-center justify-center mb-6 md:mb-10 group-hover:bg-amber-50 group-hover:border-amber-200 transition-all duration-700 shadow-sm">
-                  <div className="text-amber-700/40 group-hover:text-amber-700 transition-colors">
+                <div className={`w-16 h-16 md:w-20 md:h-20 mx-auto border border-stone-100 flex items-center justify-center mb-6 md:mb-10 group-hover:bg-amber-50 group-hover:border-amber-200 transition-all duration-700 shadow-sm ${isRustic ? 'rounded-sm bg-stone-50' : 'rounded-full bg-white'}`}>
+                  <div style={{ color: 'var(--brand-primary)' }} className="opacity-70 group-hover:opacity-100 transition-opacity">
                     <Sparkles size={isMobileView ? 24 : 32} strokeWidth={1} />
                   </div>
                 </div>
                 <h3 className="text-xs font-bold uppercase tracking-[0.25em] text-stone-900 mb-4">{vp}</h3>
-                <div className="w-12 h-px bg-stone-200 mx-auto group-hover:w-20 group-hover:bg-amber-400 transition-all duration-500"></div>
+                <div className="w-12 h-px bg-stone-200 mx-auto group-hover:w-20 transition-all duration-500" style={{ backgroundColor: 'var(--brand-primary)' }}></div>
               </div>
             ))}
           </div>
@@ -129,8 +157,8 @@ export const PremiumWebTemplate: React.FC<Props> = ({
           {/* Galería Curada */}
           <div className="mt-24 md:mt-40">
             <div className="text-center mb-12 md:mb-16">
-              <span className="text-amber-700 font-bold text-[10px] uppercase tracking-[0.4em] mb-4 block">Capturando el Alma</span>
-              <h2 className="text-3xl md:text-4xl font-serif font-bold text-stone-900">La Vida en el Apiario</h2>
+              <span className="font-bold text-[10px] uppercase tracking-[0.4em] mb-4 block" style={{ color: 'var(--brand-primary)' }}>Capturando el Alma</span>
+              <h2 className={`text-3xl md:text-4xl font-bold text-stone-900 ${fontHeader}`}>La Vida en el Apiario</h2>
             </div>
 
             <div className={`grid grid-cols-1 ${isMobileView ? '' : 'md:grid-cols-12'} gap-6 ${isMobileView ? 'h-auto' : 'h-[700px]'}`}>

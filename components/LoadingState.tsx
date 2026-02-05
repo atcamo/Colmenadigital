@@ -8,11 +8,11 @@ export const LoadingState: React.FC = () => {
 
   const messages = [
     "Conectando con la colmena...",
-    "Analizando tu presencia digital...",
-    "Extrayendo colores del apiario...",
-    "Redactando tu historia artesanal...",
-    "Generando tu certificado Web3...",
-    "Casi listo, puliendo el diseño..."
+    "Analizando tu logo y paleta de colores...",
+    "Sincronizando con tu presencia en Instagram...",
+    "Redactando tu historia artesanal premium...",
+    "Diseñando tu vitrina digital personalizada...",
+    "Casi listo, puliendo el brillo de la miel..."
   ];
 
   useEffect(() => {

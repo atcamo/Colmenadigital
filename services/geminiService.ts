@@ -1,10 +1,10 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { BeekeeperInput, GeneratedWebProfile } from "../types";
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const generateWebProfile = async (input: BeekeeperInput): Promise<GeneratedWebProfile> => {
-  // Intentamos obtener la API Key de varias fuentes para mayor robustez
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY ||
     (typeof process !== 'undefined' ? process.env.GEMINI_API_KEY : '') ||
     (typeof process !== 'undefined' ? process.env.API_KEY : '');
@@ -14,37 +14,59 @@ export const generateWebProfile = async (input: BeekeeperInput): Promise<Generat
   }
 
   const ai = new GoogleGenAI({ apiKey });
-  const model = "gemini-2.0-flash"; // Cambiado a 1.5-flash por ser más estable y evitar 404s comunes en 2.0-exp
+  const model = "gemini-2.0-flash";
 
   const systemInstruction = `
-    Eres un experto estratega de marca para productos alimenticios artesanales premium y un conocedor del ecosistema Web3 (Farcaster, Nouns, Blockchain).
-    Tu objetivo es completar el contenido para una PLANTILLA DE SITIO WEB LIMPIA Y MODERNA y proponer una IDENTIDAD DIGITAL DESCENTRALIZADA.
+    Eres un experto estratega de marca y diseñador UI/UX premium.
+    Tu objetivo es crear una identidad visual y de contenido para un apicultor artesanal.
     
-    IMPORTANTE: 
-    - Genera el contenido principal en ESPAÑOL. 
-    - El farcasterHandle debe ser corto y directo (ej: mieldelnorte, beearturo). EVITA sufijos como _cl, _oficial o similares. NO incluyas el símbolo "@" al inicio.
-    - El estilo de los textos debe ser PREMIUM, profesional y evocador, resaltando la calidad artesanal de la miel.
-    - NO menciones "Blockchain", "Cripto" ni "Trazabilidad Tecnológica" en los textos. Enfócate en el valor del producto y el trabajo del apicultor.
-    - Si los desafíos del usuario son muy cortos, ignóralos y crea una estrategia basada en los desafíos comunes de la apicultura artesanal.
+    TAREAS VISUALES:
+    1. Si se proporciona un LOGO o imagen de marca, analízalo detalladamente:
+       - Extrae el color dominante (Primary Color) en formato HEX. Busca tonos elegantes (miel profundo, oro viejo, carbón, crema).
+       - Extrae un color secundario de contraste (Secondary Color) en formato HEX.
+       - Determina el "Style Vibe" (rustic, minimalist, luxury, modern) basándote en el diseño.
+    2. Si NO hay logo, propón una paleta basada en el nombre del apiario.
+    3. Para la galería de imágenes, propón 3 descripciones de fotos que encajen con la marca.
+
+    TAREAS DE CONTENIDO:
+    - Contenido en ESPAÑOL. 
+    - Farcaster handle sugerido sin @.
+    - Tono PREMIUM y evocador. No menciones tecnología en los textos públicos.
   `;
 
   const userPrompt = `
     Datos del apicultor:
     - Nombre: ${input.name}
-    - Nombre del Apiario: ${input.farmName}
+    - Marca/Apiario: ${input.farmName}
     - Ubicación: ${input.location}
-    - Problema de Mercado: ${input.painPointMarket}
-    - Problema Financiero: ${input.painPointMoney}
-    - Interés en Venta Directa Online: ${input.wantsToSellOnline ? 'SÍ' : 'NO AÚN'}
+    - Desafíos: ${input.painPointMarket}, ${input.painPointMoney}
+    - Venta Online: ${input.wantsToSellOnline ? 'Sí' : 'No'}
+    - Referencia Social: ${input.socialUrl}
 
-    Instrucciones:
-    1. Genera un Hero Title elegante.
-    2. Un Tagline que inspire confianza.
-    3. Un texto de "Sobre Nosotros" de 2 frases.
-    4. 3 propuestas de valor cortas.
-    5. Un análisis estratégico de cómo mejorar su rentabilidad vendiendo directo al consumidor y posicionando su marca como producto premium.
-    6. Propón un nombre de usuario (handle) para Farcaster que sea corto y directo. SIN EL @.
+    Instrucciones de Respuesta:
+    - Genera Hero Title, Tagline, Sobre Nosotros, 3 Propuestas de Valor y Análisis Estratégico.
+    - Define primaryColor, secondaryColor y styleVibe.
   `;
+
+  const messageParts: any[] = [{ text: userPrompt }];
+
+  if (input.logo && input.logo.startsWith('data:image')) {
+    try {
+      const base64Parts = input.logo.split(',');
+      if (base64Parts.length > 1) {
+        const base64Data = base64Parts[1];
+        const mimeType = input.logo.split(';')[0].split(':')[1];
+        messageParts.push({
+          inlineData: {
+            data: base64Data,
+            mimeType: mimeType
+          }
+        });
+      }
+    } catch (e) {
+      console.warn("Error procesando logo para Vision:", e);
+    }
+  }
 
   const RETRIES = 2;
   let lastError: any;
@@ -53,7 +75,7 @@ export const generateWebProfile = async (input: BeekeeperInput): Promise<Generat
     try {
       const response = await ai.models.generateContent({
         model: model,
-        contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+        contents: [{ role: 'user', parts: messageParts }],
         config: {
           systemInstruction: systemInstruction,
           responseMimeType: "application/json",
@@ -68,16 +90,22 @@ export const generateWebProfile = async (input: BeekeeperInput): Promise<Generat
                 items: { type: Type.STRING }
               },
               strategicAnalysis: { type: Type.STRING },
-              farcasterHandle: { type: Type.STRING }
+              farcasterHandle: { type: Type.STRING },
+              primaryColor: { type: Type.STRING },
+              secondaryColor: { type: Type.STRING },
+              styleVibe: {
+                type: Type.STRING,
+                enum: ['rustic', 'minimalist', 'luxury', 'modern']
+              }
             },
-            propertyOrdering: ["heroTitle", "tagline", "aboutUsText", "valueProposition", "strategicAnalysis", "farcasterHandle"]
+            required: ["heroTitle", "tagline", "primaryColor", "secondaryColor", "styleVibe"]
           },
           temperature: 0.7,
         }
       });
 
       const text = response.text;
-      if (!text) throw new Error("Recibimos una respuesta vacía de la IA.");
+      if (!text) throw new Error("Respuesta vacía de la IA.");
 
       return JSON.parse(text.trim()) as GeneratedWebProfile;
 
@@ -85,28 +113,15 @@ export const generateWebProfile = async (input: BeekeeperInput): Promise<Generat
       console.error(`Intento ${attempt + 1} fallido:`, error);
       lastError = error;
 
-      // Error 404: A menudo es por el nombre del modelo
       if (error.message?.includes("404") || error.toString().includes("NOT_FOUND")) {
-        throw new Error(`Error de API: El modelo '${model}' no fue encontrado. Verifica el acceso en tu consola de Google AI.`);
+        throw new Error(`Error de API: El modelo '${model}' no fue encontrado.`);
       }
 
-      // Si es error de autenticación (400/401 chistoso de Google) no reintentamos
-      if (error.message?.includes("API key") || error.message?.includes("403") || error.toString().includes("API_KEY")) {
-        throw new Error("Error de Configuración: Tu API Key no es válida o no tiene permisos.");
-      }
-
-      // Si no es el último intento, esperamos
       if (attempt < RETRIES) {
-        await wait(2000); // 2 segundos entre intentos
+        await wait(2000);
       }
     }
   }
 
-  // Si llegamos aquí, fallaron todos los intentos
-  if (lastError?.message?.includes("429")) {
-    throw new Error("La colmena está saturada (Límite de cuota excedido). Intenta en un rato.");
-  }
-
-  throw lastError instanceof Error ? lastError : new Error("Error desconocido conectando con la Colmena.");
-
+  throw lastError instanceof Error ? lastError : new Error("Error final en la colmena.");
 };
