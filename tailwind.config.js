@@ -15,7 +15,10 @@ export default {
       },
       fontFamily: {
         'press-start': ['"Press Start 2P"', 'cursive', 'monospace'],
-        'sans': ['Verdana', 'sans-serif'],
+        'sans': ['Outfit', 'sans-serif'], // Usamos Outfit como base moderna
+        'brand-luxury': ['"Playfair Display"', 'serif'],
+        'brand-modern': ['Outfit', 'sans-serif'],
+        'brand-rustic': ['"EB Garamond"', 'serif'],
       },
       boxShadow: {
         'hard': '8px 8px 0px 0px rgba(0,0,0,1)',

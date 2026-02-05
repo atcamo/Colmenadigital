@@ -167,7 +167,7 @@ export const PremiumWebTemplate: React.FC<Props> = ({
                 {tempProfile.galleryImages?.[0] ? (
                   <img src={tempProfile.galleryImages[0]} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Apiario" />
                 ) : (
-                  <div className="w-full h-full bg-stone-100 flex items-center justify-center text-stone-400 font-serif italic">Pureza Capturada</div>
+                  <div className={`w-full h-full bg-stone-100 flex items-center justify-center text-stone-400 italic ${fontHeader}`}>Pureza Capturada</div>
                 )}
                 {isEditing && tempProfile.galleryImages?.[0] && (
                   <button onClick={() => onRemoveGalleryImage(0)} className="absolute top-4 right-4 bg-red-500 text-white p-2 rounded-full shadow-xl"><X size={16} /></button>
@@ -207,7 +207,7 @@ export const PremiumWebTemplate: React.FC<Props> = ({
             <div className="mt-24 md:mt-40 border-t border-stone-100 pt-20 md:pt-32">
               <div className="text-center mb-12 md:mb-20">
                 <span className="text-amber-700 font-bold text-[10px] uppercase tracking-[0.4em] mb-4 block">Venta Directa del Apiario</span>
-                <h2 className="text-3xl md:text-4xl font-serif font-bold text-stone-900">Selección de la Estación</h2>
+                <h2 className={`text-3xl md:text-4xl font-bold text-stone-900 ${fontHeader}`}>Selección de la Estación</h2>
               </div>
 
               <div className={`grid ${isMobileView ? 'grid-cols-1' : 'md:grid-cols-2'} gap-8 md:gap-12 max-w-5xl mx-auto`}>
@@ -216,16 +216,16 @@ export const PremiumWebTemplate: React.FC<Props> = ({
                     <div className="absolute inset-0 bg-stone-900/10 group-hover:bg-transparent transition-colors"></div>
                     <img src="https://images.unsplash.com/photo-1587334274328-64186a80aeee?q=80&w=800" className="w-full h-full object-cover" alt="Miel Pura" />
                   </div>
-                  <h3 className="text-lg md:text-xl font-serif font-bold mb-2">Miel de Pradera Real</h3>
+                  <h3 className={`text-lg md:text-xl font-bold mb-2 ${fontHeader}`}>Miel de Pradera Real</h3>
                   <p className="text-stone-400 text-[10px] md:text-xs font-bold uppercase tracking-widest mb-4 md:mb-6">Cosecha Limitada — 500g</p>
-                  <div className="text-xl md:text-2xl font-serif text-stone-900 mb-6 md:mb-8">$18.50</div>
+                  <div className={`text-xl md:text-2xl text-stone-900 mb-6 md:mb-8 ${fontHeader}`}>$18.50</div>
                   <button className="w-full py-4 bg-stone-900 text-white font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-black transition-colors flex items-center justify-center gap-3">
                     <Sparkles size={14} style={{ color: 'var(--brand-primary)' }} /> Añadir al Carrito
                   </button>
                 </div>
 
                 <div className="bg-stone-900 p-8 md:p-12 text-white flex flex-col justify-center border-l-4" style={{ borderLeftColor: 'var(--brand-primary)' }}>
-                  <h3 className="text-2xl md:text-3xl font-serif font-bold mb-6 italic leading-tight">"Calidad garantizada desde el panal hasta tu mesa."</h3>
+                  <h3 className={`text-2xl md:text-3xl font-bold mb-6 italic leading-tight ${fontHeader}`}>"Calidad garantizada desde el panal hasta tu mesa."</h3>
                   <p className="text-stone-400 text-xs md:text-sm leading-relaxed mb-8 md:mb-10">
                     Activa tu cuenta para configurar tu billetera y empezar a recibir pagos sin intermediarios.
                   </p>
@@ -252,7 +252,7 @@ export const PremiumWebTemplate: React.FC<Props> = ({
 
           <div className="mt-24 md:mt-40 bg-stone-50 p-10 md:p-20 rounded-sm border border-stone-100 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-12 opacity-[0.03] pointer-events-none">
-              <div className="text-stone-900 scale-[4] rotate-12 font-serif font-black">"{inputData.farmName.charAt(0)}"</div>
+              <div className={`text-stone-900 scale-[4] rotate-12 font-black ${fontHeader}`}>"{inputData.farmName.charAt(0)}"</div>
             </div>
             <div className="max-w-3xl mx-auto text-center relative z-10">
               <span className="text-[10px] font-black uppercase tracking-[0.5em] mb-6 md:mb-10 block" style={{ color: 'var(--brand-primary)' }}>Nuestra Esencia</span>
@@ -260,11 +260,11 @@ export const PremiumWebTemplate: React.FC<Props> = ({
                 <textarea
                   value={tempProfile.aboutUsText}
                   onChange={(e) => onFieldChange('aboutUsText', e.target.value)}
-                  className="w-full text-xl md:text-2xl text-stone-700 font-serif leading-[1.8] text-center bg-white border border-stone-200 p-6 md:p-8 rounded-xl"
+                  className={`w-full text-xl md:text-2xl text-stone-700 leading-[1.8] text-center bg-white border border-stone-200 p-6 md:p-8 rounded-xl ${fontBody}`}
                   rows={4}
                 />
               ) : (
-                <p className="text-2xl md:text-4xl text-stone-800 font-serif leading-[1.6] italic">"{tempProfile.aboutUsText}"</p>
+                <p className={`text-2xl md:text-4xl text-stone-800 leading-[1.6] italic ${fontBody}`}>"{tempProfile.aboutUsText}"</p>
               )}
               <div className="mt-8 md:mt-12 flex flex-col items-center">
                 <div className="w-16 h-px mb-6" style={{ backgroundColor: 'var(--brand-primary)' }}></div>
@@ -278,7 +278,7 @@ export const PremiumWebTemplate: React.FC<Props> = ({
 
       <footer className="bg-white border-t border-stone-100 py-16 md:py-24 px-6 md:px-12 text-center">
         <div className="max-w-xs mx-auto mb-10 md:mb-12">
-          <div className="font-serif text-xl md:text-2xl font-bold mb-4">{inputData.farmName}</div>
+          <div className={`text-xl md:text-2xl font-bold mb-4 ${fontHeader}`}>{inputData.farmName}</div>
           <div className="w-12 h-px mx-auto" style={{ backgroundColor: 'var(--brand-primary)' }}></div>
         </div>
         <div className="flex justify-center gap-6 md:gap-12 text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] text-stone-400 border-b border-stone-50 pb-10 md:pb-12 mb-10 md:mb-12">
