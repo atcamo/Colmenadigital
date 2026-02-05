@@ -50,12 +50,24 @@ export const generateWebProfile = async (input: BeekeeperInput): Promise<Generat
 
   const messageParts: any[] = [{ text: userPrompt }];
 
-  if (input.logo && input.logo.startsWith('data:image')) {
+  if (input.logo) {
     try {
-      const base64Parts = input.logo.split(',');
-      if (base64Parts.length > 1) {
-        const base64Data = base64Parts[1];
-        const mimeType = input.logo.split(';')[0].split(':')[1];
+      let base64Data = '';
+      let mimeType = '';
+
+      if (input.logo.startsWith('data:image')) {
+        base64Data = input.logo.split(',')[1];
+        mimeType = input.logo.split(';')[0].split(':')[1];
+      } else if (input.logo.startsWith('http')) {
+        // Si es una URL, intentamos descargarla (el navegador/IA lo hará)
+        // Pero para mayor seguridad en el envío a Gemini, lo ideal es enviarlo como URL si el modelo lo soporta 
+        // o dejar que el sistema instruction sepa que hay un logo en esa URL.
+        // Por ahora, para Gemini 2.0 Flash, lo más directo es enviarlo como part de imagen si podemos.
+        // Si no podemos descargarla por CORS, al menos notificamos a la IA.
+        messageParts.push({ text: `Logo de la marca disponible en: ${input.logo}` });
+      }
+
+      if (base64Data && mimeType) {
         messageParts.push({
           inlineData: {
             data: base64Data,
@@ -64,7 +76,7 @@ export const generateWebProfile = async (input: BeekeeperInput): Promise<Generat
         });
       }
     } catch (e) {
-      console.warn("Error procesando logo para Vision:", e);
+      console.warn("Error procesando imagen para IA:", e);
     }
   }
 

@@ -67,7 +67,7 @@ export const PremiumWebTemplate: React.FC<Props> = ({
               </>
             )}
             {inputData.wantsToSellOnline && (
-              <span className="cursor-pointer text-amber-600 hover:text-amber-700 transition-colors font-bold">Tienda</span>
+              <span className="cursor-pointer hover:opacity-80 transition-colors font-bold" style={{ color: 'var(--brand-primary)' }}>Tienda</span>
             )}
           </div>
         )}
@@ -219,11 +219,11 @@ export const PremiumWebTemplate: React.FC<Props> = ({
                   <p className="text-stone-400 text-[10px] md:text-xs font-bold uppercase tracking-widest mb-4 md:mb-6">Cosecha Limitada — 500g</p>
                   <div className="text-xl md:text-2xl font-serif text-stone-900 mb-6 md:mb-8">$18.50</div>
                   <button className="w-full py-4 bg-stone-900 text-white font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-black transition-colors flex items-center justify-center gap-3">
-                    <Sparkles size={14} className="text-amber-400" /> Añadir al Carrito
+                    <Sparkles size={14} style={{ color: 'var(--brand-primary)' }} /> Añadir al Carrito
                   </button>
                 </div>
 
-                <div className="bg-stone-900 p-8 md:p-12 text-white flex flex-col justify-center border-l-4 border-amber-500">
+                <div className="bg-stone-900 p-8 md:p-12 text-white flex flex-col justify-center border-l-4" style={{ borderLeftColor: 'var(--brand-primary)' }}>
                   <h3 className="text-2xl md:text-3xl font-serif font-bold mb-6 italic leading-tight">"Calidad garantizada desde el panal hasta tu mesa."</h3>
                   <p className="text-stone-400 text-xs md:text-sm leading-relaxed mb-8 md:mb-10">
                     Activa tu cuenta para configurar tu billetera y empezar a recibir pagos sin intermediarios.
@@ -235,10 +235,13 @@ export const PremiumWebTemplate: React.FC<Props> = ({
                     </div>
                     <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest pt-2">
                       <span>Total</span>
-                      <span className="text-amber-400">$18.50</span>
+                      <span style={{ color: 'var(--brand-primary)' }}>$18.50</span>
                     </div>
                   </div>
-                  <button className="mt-8 md:mt-12 w-full py-5 bg-amber-500 text-stone-900 font-black text-xs uppercase tracking-[0.3em] hover:bg-amber-400 transition-all shadow-xl shadow-black/40">
+                  <button
+                    className="mt-8 md:mt-12 w-full py-5 text-stone-900 font-black text-xs uppercase tracking-[0.3em] hover:opacity-90 transition-all shadow-xl shadow-black/40"
+                    style={{ backgroundColor: 'var(--brand-primary)' }}
+                  >
                     Pagar con Kit de Pago
                   </button>
                 </div>
@@ -251,7 +254,7 @@ export const PremiumWebTemplate: React.FC<Props> = ({
               <div className="text-stone-900 scale-[4] rotate-12 font-serif font-black">"{inputData.farmName.charAt(0)}"</div>
             </div>
             <div className="max-w-3xl mx-auto text-center relative z-10">
-              <span className="text-[10px] font-black uppercase tracking-[0.5em] text-amber-800 mb-6 md:mb-10 block">Nuestra Esencia</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.5em] mb-6 md:mb-10 block" style={{ color: 'var(--brand-primary)' }}>Nuestra Esencia</span>
               {isEditing ? (
                 <textarea
                   value={tempProfile.aboutUsText}
@@ -263,7 +266,7 @@ export const PremiumWebTemplate: React.FC<Props> = ({
                 <p className="text-2xl md:text-4xl text-stone-800 font-serif leading-[1.6] italic">"{tempProfile.aboutUsText}"</p>
               )}
               <div className="mt-8 md:mt-12 flex flex-col items-center">
-                <div className="w-16 h-px bg-amber-600 mb-6"></div>
+                <div className="w-16 h-px mb-6" style={{ backgroundColor: 'var(--brand-primary)' }}></div>
                 <p className="font-bold uppercase text-[10px] md:text-[11px] tracking-[0.3em] text-stone-400">{inputData.name}</p>
                 <p className="text-[8px] md:text-[9px] uppercase tracking-[0.2em] text-stone-300 mt-2">Fundador de {inputData.farmName}</p>
               </div>
@@ -275,7 +278,7 @@ export const PremiumWebTemplate: React.FC<Props> = ({
       <footer className="bg-white border-t border-stone-100 py-16 md:py-24 px-6 md:px-12 text-center">
         <div className="max-w-xs mx-auto mb-10 md:mb-12">
           <div className="font-serif text-xl md:text-2xl font-bold mb-4">{inputData.farmName}</div>
-          <div className="w-12 h-1 bg-amber-600 mx-auto"></div>
+          <div className="w-12 h-px mx-auto" style={{ backgroundColor: 'var(--brand-primary)' }}></div>
         </div>
         <div className="flex justify-center gap-6 md:gap-12 text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] text-stone-400 border-b border-stone-50 pb-10 md:pb-12 mb-10 md:mb-12">
           <span className="cursor-pointer hover:text-stone-900 transition-colors">Instagram</span>
@@ -292,7 +295,7 @@ export const PremiumWebTemplate: React.FC<Props> = ({
 
         {/* SELLO DE AUTENTICIDAD BEENOUNS (SOLUCIÓN PUNTO 5) */}
         <div className="flex justify-center mt-12 opacity-40 hover:opacity-100 transition-opacity">
-          <div className="flex items-center gap-2 border-2 border-black px-3 py-1 bg-amber-400 rotate-1 shadow-hard-sm cursor-help">
+          <div className="flex items-center gap-2 border-2 border-black px-3 py-1 rotate-1 shadow-hard-sm cursor-help" style={{ backgroundColor: 'var(--brand-primary)' }}>
             <span className="text-xs">🐝</span>
             <span className="text-[8px] font-black uppercase tracking-tighter text-black">Authentic Colmena Digital — BeeNouns CC</span>
           </div>
