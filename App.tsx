@@ -12,8 +12,10 @@ import { AppState, BeekeeperInput, GeneratedWebProfile } from './types';
 import { generateWebProfile } from './services/geminiService';
 import { profileService } from './services/profileService';
 import { LoadingState } from './components/LoadingState';
+import { LanguageProvider, useTranslation } from './context/LanguageContext';
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
+  const { lang, t } = useTranslation();
   const [state, setState] = useState<AppState>(AppState.LANDING);
   const [inputData, setInputData] = useState<BeekeeperInput | null>(null);
   const [profile, setProfile] = useState<GeneratedWebProfile | null>(null);
@@ -99,13 +101,13 @@ const App: React.FC = () => {
     else if (state === AppState.FORM) setState(AppState.LANDING);
   };
 
-  const handleFormSubmit = async (data: BeekeeperInput) => {
+  const handleFormSubmit = async (data: BeekeeperInput, logoBase64?: string) => {
     setInputData(data);
     setError(null);
     setState(AppState.LOADING);
 
     try {
-      const result = await generateWebProfile(data);
+      const result = await generateWebProfile(data, logoBase64, lang);
       setProfile(result);
       setOriginalProfile(result);
       setState(AppState.RESULT);
@@ -192,10 +194,16 @@ const App: React.FC = () => {
       <SocialAuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
-        farmName={inputData?.farmName || "tu Marca"}
+        farmName={inputData?.farmName || t('modal.yourBrand')}
       />
     </main>
   );
 };
+
+const App: React.FC = () => (
+  <LanguageProvider>
+    <AppContent />
+  </LanguageProvider>
+);
 
 export default App;

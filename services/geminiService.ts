@@ -4,7 +4,7 @@ import { BeekeeperInput, GeneratedWebProfile } from "../types";
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-export const generateWebProfile = async (input: BeekeeperInput): Promise<GeneratedWebProfile> => {
+export const generateWebProfile = async (input: BeekeeperInput, logoBase64?: string, lang: string = 'es'): Promise<GeneratedWebProfile> => {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY ||
     (typeof process !== 'undefined' ? process.env.GEMINI_API_KEY : '') ||
     (typeof process !== 'undefined' ? process.env.API_KEY : '');
@@ -29,7 +29,7 @@ export const generateWebProfile = async (input: BeekeeperInput): Promise<Generat
     3. Para la galería de imágenes, propón 3 descripciones de fotos que encajen con la marca.
 
     TAREAS DE CONTENIDO:
-    - Contenido en ESPAÑOL. 
+    - Contenido en el idioma: ${lang.toUpperCase()}. 
     - Farcaster handle sugerido sin @.
     - Tono PREMIUM y evocador. No menciones tecnología en los textos públicos.
   `;
@@ -50,33 +50,46 @@ export const generateWebProfile = async (input: BeekeeperInput): Promise<Generat
 
   const messageParts: any[] = [{ text: userPrompt }];
 
-  if (input.logo) {
+  if (logoBase64 || input.logo) {
     try {
       let base64Data = '';
       let mimeType = '';
+      const source = logoBase64 || input.logo || '';
 
-      if (input.logo.startsWith('data:image')) {
-        base64Data = input.logo.split(',')[1];
-        mimeType = input.logo.split(';')[0].split(':')[1];
-      } else if (input.logo.startsWith('http')) {
-        // Si es una URL, intentamos descargarla (el navegador/IA lo hará)
-        // Pero para mayor seguridad en el envío a Gemini, lo ideal es enviarlo como URL si el modelo lo soporta 
-        // o dejar que el sistema instruction sepa que hay un logo en esa URL.
-        // Por ahora, para Gemini 2.0 Flash, lo más directo es enviarlo como part de imagen si podemos.
-        // Si no podemos descargarla por CORS, al menos notificamos a la IA.
-        messageParts.push({ text: `Logo de la marca disponible en: ${input.logo}` });
+      if (source.startsWith('data:image')) {
+        const parts = source.split(',');
+        base64Data = parts[1];
+        mimeType = parts[0].split(';')[0].split(':')[1];
+      } else if (source.startsWith('http')) {
+        // Intentar descargar la imagen y convertirla a base64
+        try {
+          const response = await fetch(source);
+          if (response.ok) {
+            const blob = await response.blob();
+            mimeType = blob.type;
+            const buffer = await blob.arrayBuffer();
+            base64Data = btoa(new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+          } else {
+            console.warn("No se pudo descargar la imagen del logo:", response.statusText);
+            messageParts.push({ text: `Logo de la marca (URL): ${source}` });
+          }
+        } catch (fetchError) {
+          console.warn("Fallo fetch de imagen por CORS o red:", fetchError);
+          messageParts.push({ text: `Logo de la marca (URL): ${source}` });
+        }
       }
 
-      if (base64Data && mimeType) {
+      if (base64Data && mimeType && (mimeType.includes('png') || mimeType.includes('jpeg') || mimeType.includes('webp'))) {
         messageParts.push({
           inlineData: {
             data: base64Data,
             mimeType: mimeType
           }
         });
+        messageParts.push({ text: "Analiza el logo adjunto para extraer la paleta de colores y el estilo visual." });
       }
     } catch (e) {
-      console.warn("Error procesando imagen para IA:", e);
+      console.warn("Error general procesando imagen para IA:", e);
     }
   }
 

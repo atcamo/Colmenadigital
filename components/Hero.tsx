@@ -5,20 +5,22 @@ import { Button } from './Button';
 import { ArrowDown, Quote, Sparkles } from 'lucide-react';
 import { BlockCard } from './BlockCard';
 import { NounsGlasses } from './NounsGlasses';
+import { useTranslation } from '../context/LanguageContext';
 
 const InteractiveWord: React.FC<{ word: string, type: 'bee' | 'noun' }> = ({ word, type }) => {
+  const { t } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
 
   const beeTooltip = {
-    title: "El Alma de la Tierra",
-    text: "Las abejas polinizan el 75% de los cultivos mundiales. Sin ellas, no hay vida. BeeNouns nace para proteger a sus guardianes: los apicultores.",
+    title: t('hero.beeTooltip.title'),
+    text: t('hero.beeTooltip.text'),
     icon: <span className="text-xl">🐝</span>,
     color: "decoration-amber-400 text-amber-600"
   };
 
   const nounTooltip = {
-    title: "¿Qué es Nouns?",
-    text: "Un experimento tecnológico de código abierto donde el arte y la comunidad financian proyectos que hacen el bien. Sin dueños, solo colmena.",
+    title: t('hero.nounTooltip.title'),
+    text: t('hero.nounTooltip.text'),
     icon: <NounsGlasses className="w-8 h-auto" />,
     color: "decoration-nounRed text-nounRed"
   };
@@ -86,6 +88,7 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({ onStart }) => {
+  const { t } = useTranslation();
   const [scrollY, setScrollY] = useState(0);
   const [hasTriggered, setHasTriggered] = useState(false);
   const [activeSide, setActiveSide] = useState<'bee' | 'noun' | null>(null);
@@ -117,11 +120,12 @@ export const Hero: React.FC<HeroProps> = ({ onStart }) => {
     };
   }, []);
 
-  const interviews = [
-    { name: "María G.", role: "Apicultora en Biobío", quote: "Antes gastaba días explicando por qué mi miel es pura. Ahora la web muestra la trazabilidad y los clientes pagan felices.", color: "bg-nounBlue" },
-    { name: "Jorge L.", role: "Mieles del Sur", quote: "Los bancos no me daban crédito. Con el registro de ventas en blockchain de BeeNouns, pude demostrar mis ingresos.", color: "bg-green-400" },
-    { name: "Familia R.", role: "3ra Generación", quote: "BeeNouns nos hizo la página profesional en lo que tardamos en tomarnos un mate.", color: "bg-nounRed" }
-  ];
+  const interviewColors = ["bg-nounBlue", "bg-green-400", "bg-nounRed"];
+  const rawInterviews = t('hero.interviews') || [];
+  const interviews = rawInterviews.map((int: any, i: number) => ({
+    ...int,
+    color: interviewColors[i % interviewColors.length]
+  }));
 
   // La abeja superior baja de forma más pausada y armónica
   const heroTx = scrollY * 0.12;
@@ -147,13 +151,13 @@ export const Hero: React.FC<HeroProps> = ({ onStart }) => {
         {/* CABECERA DE CONTEXTO (SOLUCIÓN PUNTO 1) */}
         <div className="bg-black text-white py-12 px-4 text-center border-b-4 border-black">
           <h1 className="text-5xl md:text-8xl font-black pixel-font mb-4 animate-in fade-in slide-in-from-top-4 duration-700">
-            EL INTERCAMBIO
+            {t('hero.exchange')}
           </h1>
           <p className="text-xl md:text-3xl font-bold uppercase tracking-widest text-amber-400">
-            Tu Miel. Tu Web. <span className="bg-amber-400 text-black px-2 mx-1">Gratis.</span>
+            {t('hero.exchangeSub')}
           </p>
           <p className="max-w-2xl mx-auto mt-6 text-sm md:text-lg font-medium opacity-80 leading-tight">
-            No vendemos software. Construimos colmenas digitales. Intercambiamos una web de lujo por la prueba de que eres un apicultor real.
+            {t('hero.exchangeDesc')}
           </p>
         </div>
 
@@ -197,9 +201,9 @@ export const Hero: React.FC<HeroProps> = ({ onStart }) => {
               </div>
               <div className="cube-face face-back bg-white p-8 md:p-16 text-center">
                 <div className="max-w-3xl px-4">
-                  <h4 className="text-3xl md:text-5xl font-black uppercase mb-8 border-b-8 border-amber-500 pb-4 inline-block">Guardianes</h4>
+                  <h4 className="text-3xl md:text-5xl font-black uppercase mb-8 border-b-8 border-amber-500 pb-4 inline-block">{t('hero.guardianTitle')}</h4>
                   <p className="text-xl md:text-4xl font-bold leading-tight italic mb-8">
-                    "Las abejas polinizan el mundo. Sin ellas, no hay vida. Protegemos a los guardianes del campo."
+                    "{t('hero.guardianText')}"
                   </p>
                   <div className="flex flex-wrap justify-center gap-6">
                     <span className="bg-amber-100 border-4 border-black px-6 py-2 font-black text-lg uppercase">#Naturaleza</span>
@@ -218,9 +222,9 @@ export const Hero: React.FC<HeroProps> = ({ onStart }) => {
               </div>
               <div className="cube-face face-back bg-white p-8 md:p-16 text-center">
                 <div className="max-w-3xl px-4">
-                  <h4 className="text-3xl md:text-5xl font-black uppercase mb-8 border-b-8 border-nounRed pb-4 inline-block">Comunidad</h4>
+                  <h4 className="text-3xl md:text-5xl font-black uppercase mb-8 border-b-8 border-nounRed pb-4 inline-block">{t('hero.communityTitle')}</h4>
                   <p className="text-xl md:text-4xl font-bold leading-tight italic mb-8">
-                    "Un experimento abierto donde la cultura financia el bien común. Sin dueños, solo colmena."
+                    "{t('hero.communityText')}"
                   </p>
                   <div className="flex flex-wrap justify-center gap-6">
                     <span className="bg-red-50 border-4 border-black px-6 py-2 font-black text-lg uppercase">#OpenSource</span>
@@ -235,7 +239,7 @@ export const Hero: React.FC<HeroProps> = ({ onStart }) => {
         {/* INDICADOR DE SCROLL EXPERTO */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 hidden md:flex flex-col items-center gap-2">
           <span className="bg-white border-2 border-black px-4 py-1 font-black text-[10px] uppercase shadow-hard-sm animate-bounce">
-            Descubre el intercambio
+            {t('hero.discoverExchange')}
           </span>
           <ArrowDown size={20} className="text-black animate-bounce" />
         </div>
@@ -259,18 +263,18 @@ export const Hero: React.FC<HeroProps> = ({ onStart }) => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="inline-block transform rotate-1 mb-12 relative z-10 scale-125">
             <p className="text-2xl md:text-4xl font-black bg-white border-4 border-black p-6 shadow-hard-lg">
-              TU MIEL. TU WEB. GRATIS.
+              {t('hero.heroBadge')}
             </p>
           </div>
 
           <div className="bg-white border-4 border-black p-6 shadow-hard max-w-2xl mx-auto mb-12 relative z-10">
             <p className="text-lg md:text-xl font-bold leading-relaxed">
-              Los apicultores desconfían de la tecnología. Nosotros confiamos en ti. Intercambiamos una Página Web Profesional por 5 minutos de tu tiempo.
+              {t('hero.heroTrust')}
             </p>
           </div>
 
           <Button onClick={onStart} className="text-2xl animate-pulse relative z-10">
-            COMENZAR EL INTERCAMBIO
+            {t('hero.ctaMain')}
           </Button>
 
           <div className="absolute bottom-10 animate-bounce text-black/30">
@@ -283,12 +287,12 @@ export const Hero: React.FC<HeroProps> = ({ onStart }) => {
       <section className="py-24 relative z-20 border-t-8 border-black bg-nounYellow">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-black uppercase pixel-font mb-4">Voces de la Colmena</h2>
-            <p className="text-xl font-bold">Historias reales de apicultores que ya dieron el salto.</p>
+            <h2 className="text-4xl md:text-5xl font-black uppercase pixel-font mb-4">{t('hero.voicesTitle')}</h2>
+            <p className="text-xl font-bold">{t('hero.voicesSub')}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch mb-32">
-            {interviews.map((interview, index) => (
+            {interviews.map((interview: any, index: number) => (
               <BlockCard key={index} className="bg-white flex flex-col relative h-full">
                 <div className={`absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 border-4 border-black ${interview.color} shadow-hard-sm flex items-center justify-center`}>
                   <Quote size={20} className="text-white fill-current" />
@@ -309,7 +313,7 @@ export const Hero: React.FC<HeroProps> = ({ onStart }) => {
             <div className="relative flex flex-col md:flex-row items-center justify-center gap-12 w-full">
               <div className="z-20">
                 <Button onClick={onStart} variant="secondary" className="hover:scale-105 active:scale-95 text-xl px-12">
-                  QUIERO MI WEB AHORA
+                  {t('hero.ctaFinal')}
                 </Button>
               </div>
 

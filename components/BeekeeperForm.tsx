@@ -7,21 +7,25 @@ import { Info, Image as ImageIcon, Instagram, AlertCircle, ShieldCheck, XCircle,
 import { storageService } from '../services/storageService';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 
+import { useTranslation } from '../context/LanguageContext';
+
 interface Props {
-  onSubmit: (data: BeekeeperInput) => void;
+  onSubmit: (data: BeekeeperInput, logoBase64?: string) => void;
   isLoading: boolean;
   onBack: () => void;
   error?: string | null;
   user: SupabaseUser | null;
 }
 
-const MARKET_OPTS = ["Precios muy bajos", "Intermediarios abusan", "Miel adulterada compite", "Poca venta local"];
-const MONEY_OPTS = ["Sin acceso a crédito", "Pagos muy lentos", "Inversión alta", "Costos suben"];
 
 type Step = 1 | 2 | 3 | 4;
 
 export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, error, user }) => {
+  const { t } = useTranslation();
   const [step, setStep] = useState<Step>(1);
+
+  const marketOpts = t('form.marketOpts') || [];
+  const moneyOpts = t('form.moneyOpts') || [];
   const [formData, setFormData] = useState<BeekeeperInput>(() => {
     const saved = localStorage.getItem('beekeeper_form_draft');
     return saved ? JSON.parse(saved) : {
@@ -38,6 +42,7 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
   const [urlError, setUrlError] = useState<string | null>(null);
   const [isUrlValid, setIsUrlValid] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
+  const [logoBase64, setLogoBase64] = useState<string>('');
   const [copied, setCopied] = useState(false);
 
   const validateUrl = (url: string) => {
@@ -57,7 +62,7 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
         const valid = validateUrl(formData.socialUrl);
         setIsUrlValid(valid);
         if (!valid) {
-          setUrlError("El enlace no parece un perfil real. Usa: instagram.com/usuario");
+          setUrlError(t('form.urlError'));
         }
         setIsChecking(false);
       }, 800);
@@ -87,14 +92,16 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
       const reader = new FileReader();
       reader.onloadend = async () => {
         const base64 = reader.result as string;
+        setLogoBase64(base64); // Guardamos base64 para la IA
+
         if (user) {
           const publicUrl = await storageService.uploadImage(user.id, 'profiles', 'logo.png', base64);
           if (publicUrl) {
-            setFormData({ ...formData, logo: publicUrl });
-            return;
+            setFormData(prev => ({ ...prev, logo: publicUrl }));
           }
+        } else {
+          setFormData(prev => ({ ...prev, logo: base64 }));
         }
-        setFormData({ ...formData, logo: base64 });
       };
       reader.readAsDataURL(file);
     }
@@ -123,7 +130,7 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
     e.preventDefault();
     if (step === 4) {
       localStorage.removeItem('beekeeper_form_draft');
-      onSubmit(formData);
+      onSubmit(formData, logoBase64);
     }
   };
 
@@ -143,10 +150,10 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
   );
 
   const stepsInfo = [
-    { title: "Identidad", icon: <User size={16} /> },
-    { title: "Verificación", icon: <BadgeCheck size={16} /> },
-    { title: "Desafíos", icon: <Zap size={16} /> },
-    { title: "Negocio", icon: <ShoppingBag size={16} /> }
+    { title: t('form.step1Title').split('?')[0], icon: <User size={16} /> },
+    { title: t('form.step2Title'), icon: <BadgeCheck size={16} /> },
+    { title: t('form.step3Title'), icon: <Zap size={16} /> },
+    { title: t('form.step4Title'), icon: <ShoppingBag size={16} /> }
   ];
 
   return (
@@ -188,21 +195,21 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
             {step === 1 && (
               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div className="text-center mb-8">
-                  <h2 className="text-3xl md:text-4xl font-black uppercase pixel-font mb-2">¿Con quién hablamos?</h2>
-                  <p className="font-bold text-gray-500 uppercase text-xs">Queremos conocer el alma detrás de la miel.</p>
+                  <h2 className="text-3xl md:text-4xl font-black uppercase pixel-font mb-2">{t('form.step1Title')}</h2>
+                  <p className="font-bold text-gray-500 uppercase text-xs">{t('form.step1Subtitle')}</p>
                 </div>
 
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <label className="font-black text-sm uppercase flex items-center gap-2"><User size={14} /> Tu nombre completo</label>
+                    <label className="font-black text-sm uppercase flex items-center gap-2"><User size={14} /> {t('form.nameLabel')}</label>
                     <input required name="name" value={formData.name} onChange={handleChange} className="w-full border-4 border-black p-4 font-bold focus:bg-nounYellow/10 outline-none text-lg" placeholder="Ej: Pedro Juan" autoFocus />
                   </div>
                   <div className="space-y-2">
-                    <label className="font-black text-sm uppercase flex items-center gap-2"><ImageIcon size={14} /> Nombre de tu Marca / Apiario</label>
+                    <label className="font-black text-sm uppercase flex items-center gap-2"><ImageIcon size={14} /> {t('form.farmLabel')}</label>
                     <input required name="farmName" value={formData.farmName} onChange={handleChange} className="w-full border-4 border-black p-4 font-bold focus:bg-nounYellow/10 outline-none text-lg" placeholder="Ej: Miel del Monte" />
                   </div>
                   <div className="space-y-2">
-                    <label className="font-black text-sm uppercase flex items-center gap-2"><MapPin size={14} /> ¿Dónde te encuentras?</label>
+                    <label className="font-black text-sm uppercase flex items-center gap-2"><MapPin size={14} /> {t('form.locationLabel')}</label>
                     <input required name="location" value={formData.location} onChange={handleChange} className="w-full border-4 border-black p-4 font-bold focus:bg-nounYellow/10 outline-none text-lg" placeholder="Ciudad, Región" />
                   </div>
                 </div>
@@ -213,8 +220,8 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
             {step === 2 && (
               <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
                 <div className="text-center mb-8">
-                  <h2 className="text-3xl md:text-4xl font-black uppercase pixel-font mb-2">Tu Huella</h2>
-                  <p className="font-bold text-gray-500 uppercase text-xs">Pega tu red social para validar que eres un apicultor real.</p>
+                  <h2 className="text-3xl md:text-4xl font-black uppercase pixel-font mb-2">{t('form.step2Title')}</h2>
+                  <p className="font-bold text-gray-500 uppercase text-xs">{t('form.step2Subtitle')}</p>
                 </div>
 
                 <div className={`p-6 border-4 border-black shadow-hard-sm transition-all duration-300 ${isUrlValid ? 'bg-blue-50 border-nounBlue' : (formData.socialUrl && !isChecking ? 'bg-red-50 border-nounRed' : 'bg-gray-50')}`}>
@@ -230,13 +237,18 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
                 </div>
 
                 <div className="bg-gray-100 p-6 border-4 border-black border-dashed">
-                  <h3 className="font-black text-sm uppercase mb-2">¿Tienes un logo?</h3>
-                  <p className="text-[10px] font-bold text-gray-500 uppercase mb-4">Opcional: Lo usaremos para personalizar tu web profesional.</p>
+                  <h3 className="font-black text-sm uppercase mb-2">{t('form.logoLabel')}</h3>
+                  <p className="text-[10px] font-bold text-gray-500 uppercase mb-4">{t('form.logoSub')}</p>
                   <label className="cursor-pointer bg-white border-2 border-black px-4 py-2 font-black text-xs uppercase hover:bg-black hover:text-white transition-all inline-block">
-                    {formData.logo ? 'CAMBIAR LOGO' : 'SUBIR IMAGEN'}
+                    {formData.logo ? t('preview.editWeb').toUpperCase() : t('common.save').toUpperCase()}
                     <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
                   </label>
-                  {formData.logo && <img src={formData.logo} className="mt-4 h-12 w-auto border-2 border-black" alt="Preview" />}
+                  {formData.logo && (
+                    <div className="mt-4 flex items-center gap-4">
+                      <img src={logoBase64 || formData.logo} className="h-12 w-auto border-2 border-black" alt="Preview" />
+                      <span className="text-[8px] font-black uppercase text-nounBlue">Logo Cargado</span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -245,21 +257,21 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
             {step === 3 && (
               <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
                 <div className="text-center mb-8">
-                  <h2 className="text-3xl md:text-4xl font-black uppercase pixel-font mb-2">Tus Desafíos</h2>
-                  <p className="font-bold text-gray-500 uppercase text-xs">¿Qué te quita el sueño? La IA diseñará tu mensaje de venta aquí.</p>
+                  <h2 className="text-3xl md:text-4xl font-black uppercase pixel-font mb-2">{t('form.step3Title')}</h2>
+                  <p className="font-bold text-gray-500 uppercase text-xs">{t('form.step3Subtitle')}</p>
                 </div>
 
                 <div className="space-y-6">
                   <div className="space-y-2">
-                    <label className="font-black text-sm uppercase">Problemas de Mercado</label>
-                    {renderChips(MARKET_OPTS, 'painPointMarket')}
-                    <textarea required name="painPointMarket" value={formData.painPointMarket} onChange={handleChange} className="w-full border-4 border-black p-4 font-bold h-24 outline-none focus:bg-nounYellow/5" placeholder="Cuéntanos..." />
+                    <label className="font-black text-sm uppercase">{t('form.marketLabel')}</label>
+                    {renderChips(marketOpts, 'painPointMarket')}
+                    <textarea required name="painPointMarket" value={formData.painPointMarket} onChange={handleChange} className="w-full border-4 border-black p-4 font-bold h-24 outline-none focus:bg-nounYellow/5" placeholder="..." />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="font-black text-sm uppercase">Problemas Financieros</label>
-                    {renderChips(MONEY_OPTS, 'painPointMoney')}
-                    <textarea required name="painPointMoney" value={formData.painPointMoney} onChange={handleChange} className="w-full border-4 border-black p-4 font-bold h-24 outline-none focus:bg-nounYellow/5" placeholder="Cuéntanos..." />
+                    <label className="font-black text-sm uppercase">{t('form.moneyLabel')}</label>
+                    {renderChips(moneyOpts, 'painPointMoney')}
+                    <textarea required name="painPointMoney" value={formData.painPointMoney} onChange={handleChange} className="w-full border-4 border-black p-4 font-bold h-24 outline-none focus:bg-nounYellow/5" placeholder="..." />
                   </div>
                 </div>
               </div>
@@ -269,15 +281,15 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
             {step === 4 && (
               <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
                 <div className="text-center mb-8">
-                  <h2 className="text-3xl md:text-4xl font-black uppercase pixel-font mb-2">Venta Directa</h2>
-                  <p className="font-bold text-gray-500 uppercase text-xs">El paso final para tu independencia financiera.</p>
+                  <h2 className="text-3xl md:text-4xl font-black uppercase pixel-font mb-2">{t('form.step4Title')}</h2>
+                  <p className="font-bold text-gray-500 uppercase text-xs">{t('form.step4Subtitle')}</p>
                 </div>
 
                 <div className={`p-8 border-4 border-black shadow-hard transition-all ${formData.wantsToSellOnline ? 'bg-black text-white' : 'bg-gray-50'}`}>
                   <div className="flex items-center justify-between gap-6">
                     <div className="flex-1">
-                      <h3 className="text-2xl font-black uppercase mb-2">Habitar el E-commerce</h3>
-                      <p className="text-sm font-bold opacity-80 uppercase leading-tight">¿Quieres que tu página permita a los clientes comprar tus productos directamente?</p>
+                      <h3 className="text-2xl font-black uppercase mb-2">{t('form.ecommerceTitle')}</h3>
+                      <p className="text-sm font-bold opacity-80 uppercase leading-tight">{t('form.ecommerceSub')}</p>
                     </div>
                     <button
                       type="button"
@@ -306,7 +318,7 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
 
             <div className="flex gap-4 mt-12">
               <button type="button" onClick={prevStep} className="flex-1 bg-white border-4 border-black font-black py-4 text-sm uppercase hover:bg-gray-100 transition-colors flex items-center justify-center gap-2">
-                <ChevronLeft size={20} /> ATRÁS
+                <ChevronLeft size={20} /> {t('common.back').toUpperCase()}
               </button>
 
               {step < 4 ? (
@@ -319,11 +331,11 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
                   }
                   className="flex-[2] bg-nounYellow border-4 border-black font-black py-4 text-sm uppercase shadow-hard-sm hover:-translate-y-1 hover:shadow-hard active:translate-y-0 active:shadow-none transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed"
                 >
-                  SIGUIENTE <ChevronRight size={20} />
+                  {t('common.next').toUpperCase()} <ChevronRight size={20} />
                 </button>
               ) : (
                 <Button type="submit" className="flex-[2] text-xl" disabled={isLoading}>
-                  {isLoading ? 'ENVIANDO...' : 'CREAR MI WEB'}
+                  {isLoading ? t('form.sending').toUpperCase() : t('form.submit').toUpperCase()}
                 </Button>
               )}
             </div>

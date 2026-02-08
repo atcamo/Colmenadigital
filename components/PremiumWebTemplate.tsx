@@ -2,6 +2,7 @@
 import React from 'react';
 import { GeneratedWebProfile, BeekeeperInput } from '../types';
 import { Sparkles, Image as ImageIcon, X } from 'lucide-react';
+import { useTranslation } from '../context/LanguageContext';
 
 interface Props {
   profile: GeneratedWebProfile;
@@ -30,6 +31,7 @@ export const PremiumWebTemplate: React.FC<Props> = ({
   onRemoveGalleryImage,
   isMobileView = false
 }) => {
+  const { t } = useTranslation();
   // Colores dinámicos extraídos de la IA (o fallback)
   const primary = tempProfile.primaryColor || '#D97706'; // amber-600
   const secondary = tempProfile.secondaryColor || '#1C1917'; // stone-900
@@ -165,9 +167,9 @@ export const PremiumWebTemplate: React.FC<Props> = ({
             <div className={`grid grid-cols-1 ${isMobileView ? '' : 'md:grid-cols-12'} gap-6 ${isMobileView ? 'h-auto' : 'h-[700px]'}`}>
               <div className={`${isMobileView ? 'h-[300px]' : 'md:col-span-8'} group relative overflow-hidden rounded-sm shadow-xl`}>
                 {tempProfile.galleryImages?.[0] ? (
-                  <img src={tempProfile.galleryImages[0]} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Apiario" />
+                  <img src={tempProfile.galleryImages[0]} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt={t('template.galleryImageAlt')} />
                 ) : (
-                  <div className={`w-full h-full bg-stone-100 flex items-center justify-center text-stone-400 italic ${fontHeader}`}>Pureza Capturada</div>
+                  <div className={`w-full h-full bg-stone-100 flex items-center justify-center text-stone-400 italic ${fontHeader}`}>{t('template.galleryPlaceholder')}</div>
                 )}
                 {isEditing && tempProfile.galleryImages?.[0] && (
                   <button onClick={() => onRemoveGalleryImage(0)} className="absolute top-4 right-4 bg-red-500 text-white p-2 rounded-full shadow-xl"><X size={16} /></button>
@@ -177,9 +179,9 @@ export const PremiumWebTemplate: React.FC<Props> = ({
                 {[1, 2].map(i => (
                   <div key={i} className={`group relative overflow-hidden rounded-sm shadow-lg ${isMobileView ? 'h-[200px]' : 'h-full'}`}>
                     {tempProfile.galleryImages?.[i] ? (
-                      <img src={tempProfile.galleryImages[i]} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Detalle" />
+                      <img src={tempProfile.galleryImages[i]} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt={t('template.galleryDetailAlt')} />
                     ) : (
-                      <div className="w-full h-full bg-stone-50 border border-stone-100 flex items-center justify-center text-stone-300">Detalle {i}</div>
+                      <div className="w-full h-full bg-stone-50 border border-stone-100 flex items-center justify-center text-stone-300">{t('template.galleryDetailPlaceholder', { number: i })}</div>
                     )}
                     {isEditing && tempProfile.galleryImages?.[i] && (
                       <button onClick={() => onRemoveGalleryImage(i)} className="absolute top-4 right-4 bg-red-500 text-white p-2 rounded-full shadow-xl"><X size={16} /></button>
@@ -195,7 +197,7 @@ export const PremiumWebTemplate: React.FC<Props> = ({
                   onClick={() => galleryInputRef.current?.click()}
                   className="inline-flex items-center gap-2 bg-stone-900 text-white px-8 py-4 rounded-sm font-bold text-xs uppercase hover:bg-black transition-all"
                 >
-                  <ImageIcon size={16} /> Gestionar Galería
+                  <ImageIcon size={16} /> {t('template.galleryManage')}
                 </button>
                 <input type="file" ref={galleryInputRef} onChange={onGalleryUpload} accept="image/*" multiple className="hidden" />
               </div>
@@ -206,36 +208,36 @@ export const PremiumWebTemplate: React.FC<Props> = ({
           {inputData.wantsToSellOnline && (
             <div className="mt-24 md:mt-40 border-t border-stone-100 pt-20 md:pt-32">
               <div className="text-center mb-12 md:mb-20">
-                <span className="text-amber-700 font-bold text-[10px] uppercase tracking-[0.4em] mb-4 block">Venta Directa del Apiario</span>
-                <h2 className={`text-3xl md:text-4xl font-bold text-stone-900 ${fontHeader}`}>Selección de la Estación</h2>
+                <span className="text-amber-700 font-bold text-[10px] uppercase tracking-[0.4em] mb-4 block">{t('template.shopTitle')}</span>
+                <h2 className={`text-3xl md:text-4xl font-bold text-stone-900 ${fontHeader}`}>{t('template.shopSubtitle')}</h2>
               </div>
 
               <div className={`grid ${isMobileView ? 'grid-cols-1' : 'md:grid-cols-2'} gap-8 md:gap-12 max-w-5xl mx-auto`}>
                 <div className="bg-[#fdfcf8] p-6 md:p-10 border border-stone-100 flex flex-col items-center">
                   <div className="w-full aspect-[4/5] bg-stone-200 mb-6 md:mb-8 relative group overflow-hidden">
                     <div className="absolute inset-0 bg-stone-900/10 group-hover:bg-transparent transition-colors"></div>
-                    <img src="https://images.unsplash.com/photo-1587334274328-64186a80aeee?q=80&w=800" className="w-full h-full object-cover" alt="Miel Pura" />
+                    <img src="https://images.unsplash.com/photo-1587334274328-64186a80aeee?q=80&w=800" className="w-full h-full object-cover" alt={t('template.shopProductImageAlt')} />
                   </div>
-                  <h3 className={`text-lg md:text-xl font-bold mb-2 ${fontHeader}`}>Miel de Pradera Real</h3>
-                  <p className="text-stone-400 text-[10px] md:text-xs font-bold uppercase tracking-widest mb-4 md:mb-6">Cosecha Limitada — 500g</p>
+                  <h3 className={`text-lg md:text-xl font-bold mb-2 ${fontHeader}`}>{t('template.shopProductName')}</h3>
+                  <p className="text-stone-400 text-[10px] md:text-xs font-bold uppercase tracking-widest mb-4 md:mb-6">{t('template.shopProductDetails')}</p>
                   <div className={`text-xl md:text-2xl text-stone-900 mb-6 md:mb-8 ${fontHeader}`}>$18.50</div>
                   <button className="w-full py-4 bg-stone-900 text-white font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-black transition-colors flex items-center justify-center gap-3">
-                    <Sparkles size={14} style={{ color: 'var(--brand-primary)' }} /> Añadir al Carrito
+                    <Sparkles size={14} style={{ color: 'var(--brand-primary)' }} /> {t('template.shopAddToCart')}
                   </button>
                 </div>
 
                 <div className="bg-stone-900 p-8 md:p-12 text-white flex flex-col justify-center border-l-4" style={{ borderLeftColor: 'var(--brand-primary)' }}>
-                  <h3 className={`text-2xl md:text-3xl font-bold mb-6 italic leading-tight ${fontHeader}`}>"Calidad garantizada desde el panal hasta tu mesa."</h3>
+                  <h3 className={`text-2xl md:text-3xl font-bold mb-6 italic leading-tight ${fontHeader}`}>"{t('template.shopGuarantee')}"</h3>
                   <p className="text-stone-400 text-xs md:text-sm leading-relaxed mb-8 md:mb-10">
-                    Activa tu cuenta para configurar tu billetera y empezar a recibir pagos sin intermediarios.
+                    {t('template.shopWalletHint')}
                   </p>
                   <div className="space-y-4">
                     <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest border-b border-white/10 pb-4">
-                      <span>Subtotal</span>
+                      <span>{t('template.shopSubtotal')}</span>
                       <span>$18.50</span>
                     </div>
                     <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest pt-2">
-                      <span>Total</span>
+                      <span>{t('template.shopTotal')}</span>
                       <span style={{ color: 'var(--brand-primary)' }}>$18.50</span>
                     </div>
                   </div>
@@ -243,7 +245,7 @@ export const PremiumWebTemplate: React.FC<Props> = ({
                     className="mt-8 md:mt-12 w-full py-5 text-stone-900 font-black text-xs uppercase tracking-[0.3em] hover:opacity-90 transition-all shadow-xl shadow-black/40"
                     style={{ backgroundColor: 'var(--brand-primary)' }}
                   >
-                    Pagar con Kit de Pago
+                    {t('template.shopPayButton')}
                   </button>
                 </div>
               </div>
@@ -255,7 +257,7 @@ export const PremiumWebTemplate: React.FC<Props> = ({
               <div className={`text-stone-900 scale-[4] rotate-12 font-black ${fontHeader}`}>"{inputData.farmName.charAt(0)}"</div>
             </div>
             <div className="max-w-3xl mx-auto text-center relative z-10">
-              <span className="text-[10px] font-black uppercase tracking-[0.5em] mb-6 md:mb-10 block" style={{ color: 'var(--brand-primary)' }}>Nuestra Esencia</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.5em] mb-6 md:mb-10 block" style={{ color: 'var(--brand-primary)' }}>{t('template.aboutTitle')}</span>
               {isEditing ? (
                 <textarea
                   value={tempProfile.aboutUsText}
@@ -269,7 +271,7 @@ export const PremiumWebTemplate: React.FC<Props> = ({
               <div className="mt-8 md:mt-12 flex flex-col items-center">
                 <div className="w-16 h-px mb-6" style={{ backgroundColor: 'var(--brand-primary)' }}></div>
                 <p className="font-bold uppercase text-[10px] md:text-[11px] tracking-[0.3em] text-stone-400">{inputData.name}</p>
-                <p className="text-[8px] md:text-[9px] uppercase tracking-[0.2em] text-stone-300 mt-2">Fundador de {inputData.farmName}</p>
+                <p className="text-[8px] md:text-[9px] uppercase tracking-[0.2em] text-stone-300 mt-2">{t('template.aboutFounder', { farmName: inputData.farmName })}</p>
               </div>
             </div>
           </div>

@@ -3,19 +3,17 @@ import React, { useState, useEffect } from 'react';
 import { Sparkles, Loader2 } from 'lucide-react';
 import { NounsBee } from './NounsBee';
 
+import { useTranslation } from '../context/LanguageContext';
+
 export const LoadingState: React.FC = () => {
+  const { t } = useTranslation();
   const [messageIndex, setMessageIndex] = useState(0);
 
-  const messages = [
-    "Conectando con la colmena...",
-    "Analizando tu logo y paleta de colores...",
-    "Sincronizando con tu presencia en Instagram...",
-    "Redactando tu historia artesanal premium...",
-    "Diseñando tu vitrina digital personalizada...",
-    "Casi listo, puliendo el brillo de la miel..."
-  ];
+  const messages = t('loading.messages') || [];
 
   useEffect(() => {
+    if (messages.length === 0) return;
+
     const msgTimer = setInterval(() => {
       setMessageIndex((prev) => (prev + 1) % messages.length);
     }, 2500);
@@ -72,7 +70,7 @@ export const LoadingState: React.FC = () => {
 
       <div className="max-w-2xl space-y-8 relative z-10 px-4 text-black text-center flex flex-col items-center">
         <h2 className="text-4xl md:text-6xl font-black uppercase pixel-font mb-4 tracking-tighter">
-          Recolectando Polen...
+          {t('loading.title')}
         </h2>
 
         <div className="bg-white border-4 border-black p-8 shadow-hard w-full max-w-lg transition-all duration-500 animate-in slide-in-from-bottom-4">

@@ -3,6 +3,7 @@ import React from 'react';
 import { BlockCard } from './BlockCard';
 import { X as XIcon, Instagram, Zap, ShieldCheck, ArrowRight, Mail, Loader2, CheckCircle2 } from 'lucide-react';
 import { supabase } from '../services/supabase';
+import { useTranslation } from '../context/LanguageContext';
 
 interface Props {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export const SocialAuthModal: React.FC<Props> = ({ isOpen, onClose, farmName }) => {
+  const { t } = useTranslation();
   const [email, setEmail] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
   const [message, setMessage] = React.useState<string | null>(null);
@@ -47,7 +49,7 @@ export const SocialAuthModal: React.FC<Props> = ({ isOpen, onClose, farmName }) 
       });
       if (error) throw error;
     } catch (err: any) {
-      alert(err.message || `Error al conectar con ${provider}`);
+      alert(err.message || t('modal.socialError', { provider }));
     }
   };
 
@@ -66,8 +68,8 @@ export const SocialAuthModal: React.FC<Props> = ({ isOpen, onClose, farmName }) 
         <div className="p-6">
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h2 className="text-3xl font-black uppercase pixel-font leading-none mb-2">Asegura tu Colmena</h2>
-              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Conéctate para guardar y editar "{farmName}" en el futuro.</p>
+              <h2 className="text-3xl font-black uppercase pixel-font leading-none mb-2">{t('modal.title')}</h2>
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">{t('modal.subtitle', { farmName })}</p>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-gray-100 border-2 border-transparent hover:border-black transition-all">
               <XIcon size={24} />
@@ -77,13 +79,13 @@ export const SocialAuthModal: React.FC<Props> = ({ isOpen, onClose, farmName }) 
           <div className="space-y-4">
             {/* Login con Email (Magic Link) - RECOMENDADO */}
             <div className="p-4 border-4 border-black bg-nounYellow/5 space-y-3">
-              <p className="font-black uppercase text-[10px] text-gray-400 tracking-widest">Acceso Directo (Recomendado)</p>
+              <p className="font-black uppercase text-[10px] text-gray-400 tracking-widest">{t('modal.emailLabel')}</p>
               <div className="flex gap-2">
                 <div className="relative flex-1">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                   <input
                     type="email"
-                    placeholder="tu@email.com"
+                    placeholder={t('modal.emailPlaceholder')}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full border-2 border-black p-2 pl-10 font-bold text-sm outline-none focus:bg-white"
@@ -94,7 +96,7 @@ export const SocialAuthModal: React.FC<Props> = ({ isOpen, onClose, farmName }) 
                   onClick={handleEmailLogin}
                   className="bg-black text-white px-4 py-2 font-black text-xs uppercase hover:bg-nounRed disabled:opacity-50 transition-colors flex items-center gap-2 shadow-hard-sm active:translate-y-0.5 active:shadow-none"
                 >
-                  {isLoading ? <Loader2 className="animate-spin" size={14} /> : "Entrar"}
+                  {isLoading ? <Loader2 className="animate-spin" size={14} /> : t('modal.emailButton')}
                 </button>
               </div>
               {message && (
@@ -106,7 +108,7 @@ export const SocialAuthModal: React.FC<Props> = ({ isOpen, onClose, farmName }) 
 
             <div className="relative py-2 flex items-center">
               <div className="flex-grow border-t-2 border-black/10"></div>
-              <span className="flex-shrink mx-4 text-[10px] font-black text-gray-300 uppercase">O usa tus redes</span>
+              <span className="flex-shrink mx-4 text-[10px] font-black text-gray-300 uppercase">{t('modal.socialOr')}</span>
               <div className="flex-grow border-t-2 border-black/10"></div>
             </div>
 
@@ -143,7 +145,7 @@ export const SocialAuthModal: React.FC<Props> = ({ isOpen, onClose, farmName }) 
           <div className="mt-8 flex gap-3 p-4 bg-nounBlue/10 border-2 border-nounBlue text-nounBlue">
             <ShieldCheck className="flex-shrink-0" size={20} />
             <p className="text-[10px] font-bold uppercase leading-tight">
-              Tus datos están protegidos. Solo usamos esta red para confirmar que eres el dueño legítimo de esta colmena.
+              {t('modal.privacyHint')}
             </p>
           </div>
         </div>

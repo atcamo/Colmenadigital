@@ -12,6 +12,7 @@ import { profileService } from '../services/profileService';
 import { User } from '@supabase/supabase-js';
 import { PremiumWebTemplate } from './PremiumWebTemplate';
 import { storageService } from '../services/storageService';
+import { useTranslation } from '../context/LanguageContext';
 
 interface Props {
     profile: GeneratedWebProfile;
@@ -27,6 +28,7 @@ interface Props {
 export const WebPreview: React.FC<Props> = ({
     profile, inputData, onUpdateProfile, onResetProfile, isModified, user, onLogin
 }) => {
+    const { t } = useTranslation();
     const [isEditing, setIsEditing] = useState(false);
     const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>('desktop');
     const [tempProfile, setTempProfile] = useState<GeneratedWebProfile>(profile);
@@ -102,7 +104,7 @@ export const WebPreview: React.FC<Props> = ({
     const copyToClipboard = () => {
         const url = `${inputData.farmName.toLowerCase().replace(/\s/g, '')}.beenouns.cc`;
         navigator.clipboard.writeText(url);
-        alert("¡Enlace copiado al portapapeles!");
+        alert(t('preview.linkCopied'));
     };
 
     return (
@@ -114,7 +116,7 @@ export const WebPreview: React.FC<Props> = ({
                     <div className="flex flex-col sm:flex-row items-center justify-between bg-white border-4 border-black p-4 shadow-hard-sm gap-4">
                         <div className="flex items-center gap-4">
                             <div className="bg-black text-white px-3 py-1 font-bold text-xs uppercase pixel-font">
-                                {isEditing ? "Modo Editor" : "Vista Previa"}
+                                {isEditing ? t('preview.modeEditor') : t('preview.modePreview')}
                             </div>
                             <div className="flex bg-gray-100 p-1 rounded-lg border-2 border-black">
                                 <button
@@ -133,11 +135,11 @@ export const WebPreview: React.FC<Props> = ({
                         </div>
                         <div className="flex items-center gap-2">
                             {isEditing ? (
-                                <button onClick={handleSave} className="flex items-center gap-2 bg-nounRed text-white px-4 py-2 font-bold border-2 border-black shadow-sm hover:bg-red-600 transition-colors"><Save size={18} /> Guardar</button>
+                                <button onClick={handleSave} className="flex items-center gap-2 bg-nounRed text-white px-4 py-2 font-bold border-2 border-black shadow-sm hover:bg-red-600 transition-colors"><Save size={18} /> {t('common.save')}</button>
                             ) : (
                                 <>
-                                    {isModified && <button onClick={onResetProfile} className="flex items-center gap-2 px-3 py-2 font-bold text-xs uppercase text-gray-400 hover:text-black transition-colors"><RotateCcw size={16} /> Original</button>}
-                                    <button onClick={() => setIsEditing(true)} className="flex items-center gap-2 bg-nounYellow px-4 py-2 font-bold border-2 border-black shadow-sm hover:translate-y-[-2px] transition-all"><Edit2 size={18} /> Editar Web</button>
+                                    {isModified && <button onClick={onResetProfile} className="flex items-center gap-2 px-3 py-2 font-bold text-xs uppercase text-gray-400 hover:text-black transition-colors"><RotateCcw size={16} /> {t('preview.original')}</button>}
+                                    <button onClick={() => setIsEditing(true)} className="flex items-center gap-2 bg-nounYellow px-4 py-2 font-bold border-2 border-black shadow-sm hover:translate-y-[-2px] transition-all"><Edit2 size={18} /> {t('preview.editWeb')}</button>
                                 </>
                             )}
                         </div>
@@ -179,7 +181,7 @@ export const WebPreview: React.FC<Props> = ({
                     <BlockCard className="bg-white border-black border-4 overflow-hidden">
                         <div className="bg-nounYellow px-4 py-2 border-b-4 border-black flex items-center gap-2">
                             <TrendingUp size={16} className="text-black" />
-                            <h3 className="text-xs font-black uppercase pixel-font tracking-tighter">Plan de Crecimiento</h3>
+                            <h3 className="text-xs font-black uppercase pixel-font tracking-tighter">{t('preview.growthPlan')}</h3>
                         </div>
                         <div className="p-4 space-y-6">
                             <div className="flex gap-4">
@@ -187,7 +189,7 @@ export const WebPreview: React.FC<Props> = ({
                                     <Target size={20} />
                                 </div>
                                 <div className="flex-1">
-                                    <p className="text-[10px] font-black uppercase text-gray-400 mb-1">Tu Ventaja Competitiva</p>
+                                    <p className="text-[10px] font-black uppercase text-gray-400 mb-1">{t('preview.competitiveAdvantage')}</p>
                                     <p className="text-sm font-bold leading-relaxed text-stone-700 italic">
                                         "{profile.strategicAnalysis}"
                                     </p>
@@ -212,9 +214,9 @@ export const WebPreview: React.FC<Props> = ({
                     {/* NUEVO: BLOQUE "VER EN TU MÓVIL" (CONFIDENCIA) */}
                     <BlockCard className="bg-white border-black border-4 p-6 flex flex-col items-center text-center">
                         <Smartphone size={32} className="text-nounBlue mb-4" />
-                        <h3 className="text-xs font-black uppercase pixel-font mb-2">Ver en tu móvil</h3>
+                        <h3 className="text-xs font-black uppercase pixel-font mb-2">{t('preview.viewOnMobile')}</h3>
                         <p className="text-[10px] font-bold text-gray-500 uppercase leading-tight mb-6">
-                            Escanea para ver cómo experimentarán tu marca tus clientes.
+                            {t('preview.qrHint')}
                         </p>
 
                         {/* Simulación de QR Code Brutalista */}
@@ -234,7 +236,7 @@ export const WebPreview: React.FC<Props> = ({
                             onClick={copyToClipboard}
                             className="text-[9px] font-black uppercase underline hover:text-nounBlue transition-colors"
                         >
-                            O copia el enlace temporal
+                            {t('preview.copyLink')}
                         </button>
                     </BlockCard>
 
@@ -243,12 +245,12 @@ export const WebPreview: React.FC<Props> = ({
                         <BlockCard className="bg-nounYellow border-4 border-black shadow-hard-lg scale-105">
                             <div className="flex items-center gap-2 mb-4">
                                 <Sparkles size={16} className="animate-pulse" />
-                                <h3 className="text-lg font-black uppercase pixel-font tracking-tighter">¿Listo para lanzar?</h3>
+                                <h3 className="text-lg font-black uppercase pixel-font tracking-tighter">{t('preview.readyToLaunch')}</h3>
                             </div>
                             <p className="mb-6 text-[10px] font-bold leading-tight uppercase">
                                 {user
-                                    ? "Tus cambios se guardarán permanentemente en la colmena."
-                                    : "Publica ahora para que el mundo descubra tu cosecha."}
+                                    ? t('preview.browserBadge')
+                                    : t('preview.browserBadgeAuth')}
                             </p>
                             <div className="space-y-3">
                                 <Button
@@ -259,22 +261,22 @@ export const WebPreview: React.FC<Props> = ({
                                         } else {
                                             try {
                                                 await profileService.saveProfile(user.id, profile, inputData);
-                                                alert("¡Publicado con éxito!");
+                                                alert(t('preview.publishSuccess'));
                                             } catch (err: any) {
-                                                alert("Error al guardar: " + err.message);
+                                                alert("Error: " + err.message);
                                             }
                                         }
                                     }}
                                     className="text-sm py-5 shadow-hard-sm hover:shadow-hard transition-all font-black"
                                 >
-                                    {user ? 'GUARDAR CAMBIOS' : 'PUBLICAR PÁGINA GRATIS'}
+                                    {user ? t('preview.saveChanges').toUpperCase() : t('preview.publicPage').toUpperCase()}
                                 </Button>
                                 {!isEditing && (
                                     <button
                                         onClick={copyToClipboard}
                                         className="w-full py-3 bg-white border-4 border-black font-black text-[10px] uppercase flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
                                     >
-                                        <Globe size={14} /> Link Público
+                                        <Globe size={14} /> {t('preview.publicLink')}
                                     </button>
                                 )}
                             </div>
