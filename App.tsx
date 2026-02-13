@@ -60,6 +60,36 @@ const AppContent: React.FC = () => {
     }
   }, []);
 
+  // Lógica de Subdominios Dinámicos
+  useEffect(() => {
+    const checkSubdomain = async () => {
+      const hostname = window.location.hostname;
+      const parts = hostname.split('.');
+
+      // Si tenemos un subdominio (ej: miel-artesanal.beenouns.xyz)
+      // En localhost suele ser 'localhost', en vercel 'beenouns.xyz'
+      // El subdominio sería la primera parte si hay más de 2 partes (sub.domain.tld)
+      if (parts.length > 2 && !hostname.includes('vercel.app')) {
+        const subdomain = parts[0];
+        if (subdomain !== 'www' && subdomain !== 'admin') {
+          try {
+            const data = await profileService.getProfileBySlug(subdomain);
+            if (data) {
+              setProfile(data.profile_data);
+              setOriginalProfile(data.profile_data);
+              setInputData(data.input_data);
+              setState(AppState.RESULT);
+            }
+          } catch (err) {
+            console.error("Error cargando perfil de subdominio:", err);
+          }
+        }
+      }
+    };
+
+    checkSubdomain();
+  }, []);
+
   const [isModified, setIsModified] = useState(false);
 
   // Exponer función de admin globalmente para el Header

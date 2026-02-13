@@ -63,5 +63,18 @@ export const profileService = {
 
     if (error) throw error;
     return data;
+  },
+
+  async getProfileBySlug(slug: string) {
+    if (!supabase) return null;
+    const { data, error } = await supabase
+      .from('beekeepers')
+      .select('*')
+      .eq('slug', slug)
+      .eq('is_approved', true)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error;
+    return data;
   }
 };
