@@ -76,5 +76,16 @@ export const profileService = {
 
     if (error && error.code !== 'PGRST116') throw error;
     return data;
+  },
+
+  async deleteProfile(userId: string) {
+    if (!supabase) return null;
+    const { data, error } = await supabase
+      .from('beekeepers')
+      .delete()
+      .eq('user_id', userId);
+
+    if (error) throw error;
+    return data;
   }
 };

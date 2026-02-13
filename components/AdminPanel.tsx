@@ -45,6 +45,20 @@ export const AdminPanel: React.FC = () => {
     }
   };
 
+  const handleReject = async (userId: string) => {
+    if (!window.confirm("¿Seguro que quieres RECHAZAR y ELIMINAR permanentemente esta colmena? Esta acción no se puede deshacer.")) {
+      return;
+    }
+
+    try {
+      await profileService.deleteProfile(userId);
+      setRecords(prev => prev.filter(r => r.user_id !== userId));
+    } catch (err) {
+      console.error("Error al eliminar perfil:", err);
+      alert("Error al intentar eliminar los datos de la colmena.");
+    }
+  };
+
   const filteredRecords = records.filter(r => {
     const farmName = r.input_data?.farmName || '';
     const name = r.input_data?.name || '';
@@ -131,10 +145,10 @@ export const AdminPanel: React.FC = () => {
                       {record.is_approved ? (
                         <button
                           onClick={() => handleApprove(record.user_id, false)}
-                          className="p-2 border-2 border-black bg-white hover:bg-red-50 text-red-600 transition-colors shadow-sm"
-                          title="Desaprobar"
+                          className="p-2 border-2 border-black bg-white hover:bg-orange-50 text-orange-600 transition-colors shadow-sm"
+                          title="Poner en pendiente"
                         >
-                          <X size={18} />
+                          <Filter size={18} />
                         </button>
                       ) : (
                         <button
@@ -144,6 +158,14 @@ export const AdminPanel: React.FC = () => {
                           <Check size={18} /> <span className="font-black text-[10px] uppercase">Aprobar</span>
                         </button>
                       )}
+
+                      <button
+                        onClick={() => handleReject(record.user_id)}
+                        className="p-2 border-2 border-black bg-white hover:bg-red-50 text-red-600 transition-colors shadow-sm"
+                        title="Rechazar y Eliminar"
+                      >
+                        <X size={18} />
+                      </button>
                     </div>
                   </td>
                 </tr>
