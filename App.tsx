@@ -16,7 +16,7 @@ import { LanguageProvider, useTranslation } from './context/LanguageContext';
 import { AdminPanel } from './components/AdminPanel';
 
 // CONFIGURACIÓN DE ADMIN: Cambia esto por tu correo de Google
-const ADMIN_EMAIL = 'tu-correo-admin@gmail.com';
+const ADMIN_EMAIL = 'atilioacm@gmail.com';
 
 
 const AppContent: React.FC = () => {
