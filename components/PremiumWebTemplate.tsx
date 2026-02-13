@@ -56,6 +56,10 @@ export const PremiumWebTemplate: React.FC<Props> = ({
 
   const fallbackImage = "https://images.unsplash.com/photo-1587334274328-64186a80aeee?q=80&w=1000";
 
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = fallbackImage;
+  };
+
   return (
     <div
       style={styleStyles}
@@ -64,7 +68,14 @@ export const PremiumWebTemplate: React.FC<Props> = ({
       {/* Contenido de la Web Generada: Estética Premium */}
       <nav className={`bg-white/80 backdrop-blur-md px-6 md:px-12 py-6 flex justify-between items-center sticky top-0 z-50 border-b border-stone-100 ${isMinimalist ? 'py-4' : ''}`}>
         <div className={`flex items-center gap-4 text-xl md:text-2xl tracking-tight text-stone-900 ${fontHeader}`}>
-          {inputData.logo && <img src={inputData.logo} alt="Logo" className="w-10 h-10 md:w-12 md:h-12 object-contain" />}
+          {inputData.logo && (
+            <img
+              src={inputData.logo}
+              alt="Logo"
+              className="w-10 h-10 md:w-12 md:h-12 object-contain"
+              onError={handleImageError}
+            />
+          )}
           <span className="font-semibold" style={{ color: 'var(--brand-secondary)' }}>{inputData.farmName}</span>
         </div>
         {!isMobileView && (
@@ -87,9 +98,18 @@ export const PremiumWebTemplate: React.FC<Props> = ({
         {/* Fondo Premium con profundidad */}
         <div className="absolute inset-0 z-0 bg-stone-900">
           {isValidImageUrl(tempProfile.heroImage) ? (
-            <img src={tempProfile.heroImage} className="w-full h-full object-cover scale-105" alt="Hero" />
+            <img
+              src={tempProfile.heroImage}
+              className="w-full h-full object-cover scale-105"
+              alt="Hero"
+              onError={handleImageError}
+            />
           ) : (
-            <img src={fallbackImage} className="w-full h-full object-cover opacity-50 grayscale-[0.5]" alt="Honey Background" />
+            <img
+              src={fallbackImage}
+              className="w-full h-full object-cover opacity-50 grayscale-[0.5]"
+              alt="Honey Background"
+            />
           )}
           <div className="absolute inset-0 bg-gradient-to-b from-stone-900/40 via-stone-900/20 to-stone-900/90"></div>
         </div>
@@ -174,7 +194,12 @@ export const PremiumWebTemplate: React.FC<Props> = ({
             <div className={`grid grid-cols-1 ${isMobileView ? '' : 'md:grid-cols-12'} gap-6 ${isMobileView ? 'h-auto' : 'h-[700px]'}`}>
               <div className={`${isMobileView ? 'h-[300px]' : 'md:col-span-8'} group relative overflow-hidden rounded-sm shadow-xl`}>
                 {isValidImageUrl(tempProfile.galleryImages?.[0]) ? (
-                  <img src={tempProfile.galleryImages[0]} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt={t('template.galleryImageAlt')} />
+                  <img
+                    src={tempProfile.galleryImages[0]}
+                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                    alt={t('template.galleryImageAlt')}
+                    onError={handleImageError}
+                  />
                 ) : (
                   <div className={`w-full h-full bg-stone-100 flex items-center justify-center text-stone-400 italic ${fontHeader}`}>{t('template.galleryPlaceholder')}</div>
                 )}
@@ -186,7 +211,12 @@ export const PremiumWebTemplate: React.FC<Props> = ({
                 {[1, 2].map(i => (
                   <div key={i} className={`group relative overflow-hidden rounded-sm shadow-lg ${isMobileView ? 'h-[200px]' : 'h-full'}`}>
                     {isValidImageUrl(tempProfile.galleryImages?.[i]) ? (
-                      <img src={tempProfile.galleryImages[i]} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt={t('template.galleryDetailAlt')} />
+                      <img
+                        src={tempProfile.galleryImages[i]}
+                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                        alt={t('template.galleryDetailAlt')}
+                        onError={handleImageError}
+                      />
                     ) : (
                       <div className="w-full h-full bg-stone-50 border border-stone-100 flex items-center justify-center text-stone-300">{t('template.galleryDetailPlaceholder', { number: i })}</div>
                     )}
