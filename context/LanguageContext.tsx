@@ -22,7 +22,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [lang]);
 
   // Función simple para acceder a traducciones anidadas (ej: "hero.title")
-  const t = (key: string) => {
+  const t = (key: string, params?: Record<string, any>) => {
     const keys = key.split('.');
     let value: any = translations[lang];
 
@@ -30,9 +30,16 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (value && value[k]) {
         value = value[k];
       } else {
-        return key; // Devuelve la clave si no encuentra la traducción
+        return key;
       }
     }
+
+    if (typeof value === 'string' && params) {
+      Object.keys(params).forEach(p => {
+        value = value.replace(new RegExp(`{{${p}}}`, 'g'), params[p]);
+      });
+    }
+
     return value;
   };
 

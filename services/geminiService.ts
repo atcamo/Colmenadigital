@@ -24,7 +24,10 @@ export const generateWebProfile = async (input: BeekeeperInput, logoBase64?: str
        - Extrae un color secundario de contraste (Secondary Color) en formato HEX.
        - Determina el "Style Vibe" (rustic, minimalist, luxury, modern) basándote en el diseño.
     2. Si NO hay logo, propón una paleta basada en el nombre del apiario.
-    3. Para la galería de imágenes, propón 3 descripciones de fotos que encajen con la marca.
+    3. GESTIÓN DE IMÁGENES (CRÍTICO): 
+       - Siempre debes devolver URLs válidas en 'heroImage' y 'galleryImages'. 
+       - Si el usuario NO proporciona fotos, utiliza URLs de Unsplash (https://images.unsplash.com/...) relacionadas con: apicultura, miel artesanal, abejas en flores, frascos de miel premium, paisajes rurales.
+       - NO devuelvas descripciones de texto en los campos de imagen, solo URLs.
 
     TAREAS DE CONTENIDO:
     - Contenido en el idioma: ${lang.toUpperCase()}. 
@@ -39,12 +42,12 @@ export const generateWebProfile = async (input: BeekeeperInput, logoBase64?: str
     - Desafíos: ${input.painPointMarket}, ${input.painPointMoney}
     - Venta Online: ${input.wantsToSellOnline ? 'Sí' : 'No'}
     - Referencia Social: ${input.socialUrl}
-    - Fotos (Instagram URLs): ${input.instagramPhotos?.join(', ') || 'Ninguna'}
+    - Fotos (Instagram URLs): ${input.instagramPhotos?.length ? input.instagramPhotos.join(', ') : 'No proporcionadas'}
 
     Instrucciones de Respuesta:
     - Genera Hero Title, Tagline, Sobre Nosotros, 3 Propuestas de Valor y Análisis Estratégico.
     - Define primaryColor, secondaryColor y styleVibe.
-    - Selecciona: 1 para 'heroImage' y hasta 4 para 'galleryImages' de las fotos dadas.
+    - Selecciona: 1 URL para 'heroImage' y un array de exactamente 3 URLs para 'galleryImages'. Si el usuario no dio fotos, inventa URLs de Unsplash realistas que encajen con el estilo ${lang === 'es' ? 'artesanal' : 'artisanal'}.
   `;
 
   const messageParts: any[] = [{ text: userPrompt }];
