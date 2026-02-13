@@ -49,6 +49,13 @@ export const PremiumWebTemplate: React.FC<Props> = ({
   const fontHeader = isLuxury ? 'font-brand-luxury' : (isRustic ? 'font-brand-rustic' : 'font-brand-modern');
   const fontBody = (isLuxury || isRustic) ? 'font-brand-rustic' : 'font-brand-modern';
 
+  const isValidImageUrl = (url?: string) => {
+    if (!url) return false;
+    return url.startsWith('http') || url.startsWith('data:image') || url.startsWith('blob:');
+  };
+
+  const fallbackImage = "https://images.unsplash.com/photo-1587334274328-64186a80aeee?q=80&w=1000";
+
   return (
     <div
       style={styleStyles}
@@ -79,10 +86,10 @@ export const PremiumWebTemplate: React.FC<Props> = ({
       <header className={`${isMobileView ? 'min-h-[500px]' : 'min-h-[750px]'} flex items-center justify-center py-20 md:py-32 px-6 relative overflow-hidden bg-stone-900 dark`}>
         {/* Fondo Premium con profundidad */}
         <div className="absolute inset-0 z-0 bg-stone-900">
-          {tempProfile.heroImage ? (
+          {isValidImageUrl(tempProfile.heroImage) ? (
             <img src={tempProfile.heroImage} className="w-full h-full object-cover scale-105" alt="Hero" />
           ) : (
-            <img src="https://images.unsplash.com/photo-1587334274328-64186a80aeee?q=80&w=2000" className="w-full h-full object-cover opacity-50 grayscale-[0.5]" alt="Honey Background" />
+            <img src={fallbackImage} className="w-full h-full object-cover opacity-50 grayscale-[0.5]" alt="Honey Background" />
           )}
           <div className="absolute inset-0 bg-gradient-to-b from-stone-900/40 via-stone-900/20 to-stone-900/90"></div>
         </div>
@@ -166,7 +173,7 @@ export const PremiumWebTemplate: React.FC<Props> = ({
 
             <div className={`grid grid-cols-1 ${isMobileView ? '' : 'md:grid-cols-12'} gap-6 ${isMobileView ? 'h-auto' : 'h-[700px]'}`}>
               <div className={`${isMobileView ? 'h-[300px]' : 'md:col-span-8'} group relative overflow-hidden rounded-sm shadow-xl`}>
-                {tempProfile.galleryImages?.[0] ? (
+                {isValidImageUrl(tempProfile.galleryImages?.[0]) ? (
                   <img src={tempProfile.galleryImages[0]} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt={t('template.galleryImageAlt')} />
                 ) : (
                   <div className={`w-full h-full bg-stone-100 flex items-center justify-center text-stone-400 italic ${fontHeader}`}>{t('template.galleryPlaceholder')}</div>
@@ -178,7 +185,7 @@ export const PremiumWebTemplate: React.FC<Props> = ({
               <div className={`${isMobileView ? 'grid-cols-2 mt-6' : 'md:col-span-4 grid-rows-2'} grid gap-6 h-full`}>
                 {[1, 2].map(i => (
                   <div key={i} className={`group relative overflow-hidden rounded-sm shadow-lg ${isMobileView ? 'h-[200px]' : 'h-full'}`}>
-                    {tempProfile.galleryImages?.[i] ? (
+                    {isValidImageUrl(tempProfile.galleryImages?.[i]) ? (
                       <img src={tempProfile.galleryImages[i]} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt={t('template.galleryDetailAlt')} />
                     ) : (
                       <div className="w-full h-full bg-stone-50 border border-stone-100 flex items-center justify-center text-stone-300">{t('template.galleryDetailPlaceholder', { number: i })}</div>

@@ -24,10 +24,15 @@ export const generateWebProfile = async (input: BeekeeperInput, logoBase64?: str
        - Extrae un color secundario de contraste (Secondary Color) en formato HEX.
        - Determina el "Style Vibe" (rustic, minimalist, luxury, modern) basándote en el diseño.
     2. Si NO hay logo, propón una paleta basada en el nombre del apiario.
-    3. GESTIÓN DE IMÁGENES (CRÍTICO): 
-       - Siempre debes devolver URLs válidas en 'heroImage' y 'galleryImages'. 
-       - Si el usuario NO proporciona fotos, utiliza URLs de Unsplash (https://images.unsplash.com/...) relacionadas con: apicultura, miel artesanal, abejas en flores, frascos de miel premium, paisajes rurales.
-       - NO devuelvas descripciones de texto en los campos de imagen, solo URLs.
+    3. GESTIÓN DE IMÁGENES (ESTRICTO): 
+       - Siempre debes devolver URLs válidas en 'heroImage' y 'galleryImages'.
+       - Si el usuario NO proporciona fotos, selecciona de este catálogo de Unsplash:
+         * Abejas/Flores: https://images.unsplash.com/photo-1587334274328-64186a80aeee?q=80&w=1000
+         * Frascos de Miel: https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?q=80&w=1000
+         * Apicultor trabajando: https://images.unsplash.com/photo-1459156212016-c81b2da9bf7?q=80&w=1000
+         * Panal/Cera: https://images.unsplash.com/photo-1596720426673-e483d74ed701?q=80&w=1000
+         * Paisaje Rural: https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1000
+       - NUNCA devuelvas texto descriptivo en campos de imagen.
 
     TAREAS DE CONTENIDO:
     - Contenido en el idioma: ${lang.toUpperCase()}. 
@@ -47,7 +52,8 @@ export const generateWebProfile = async (input: BeekeeperInput, logoBase64?: str
     Instrucciones de Respuesta:
     - Genera Hero Title, Tagline, Sobre Nosotros, 3 Propuestas de Valor y Análisis Estratégico.
     - Define primaryColor, secondaryColor y styleVibe.
-    - Selecciona: 1 URL para 'heroImage' y un array de exactamente 3 URLs para 'galleryImages'. Si el usuario no dio fotos, inventa URLs de Unsplash realistas que encajen con el estilo ${lang === 'es' ? 'artesanal' : 'artisanal'}.
+    - Selecciona: 1 URL para 'heroImage' y un array de exactamente 3 URLs para 'galleryImages'. 
+    - IMPORTANTE: Si no hay fotos del usuario, usa OBLIGATORIAMENTE las URLs de Unsplash proporcionadas arriba. No inventes URLs.
   `;
 
   const messageParts: any[] = [{ text: userPrompt }];
