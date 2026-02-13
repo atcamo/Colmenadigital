@@ -49,45 +49,38 @@ const AppContent: React.FC = () => {
     }
   }, []);
 
+  const [isModified, setIsModified] = useState(false);
+
   // Función para sincronizar datos locales con el servidor cuando el usuario se loguea
   const syncProfileWithUser = async (userId: string) => {
     try {
-      // 1. Intentar cargar perfil guardado en la nube
       const savedData = await profileService.getProfile(userId);
-
-      // 2. Revisar si hay cambios locales pendientes de guardar (hechos justo antes de loguearse)
       const localProfile = localStorage.getItem('pending_profile');
       const localInput = localStorage.getItem('pending_input');
 
       if (localProfile && localInput) {
         const p = JSON.parse(localProfile);
         const i = JSON.parse(localInput);
-
-        // Guardamos lo que el usuario estaba editando localmente en la base de datos
         await profileService.saveProfile(userId, p, i);
-
-        // Limpiamos local
         localStorage.removeItem('pending_profile');
         localStorage.removeItem('pending_input');
 
-        // Actualizamos estado
         setProfile(p);
         setOriginalProfile(p);
         setInputData(i);
         setState(AppState.RESULT);
+        setIsModified(false); // Resetear flag al sincronizar exitosamente
       } else if (savedData) {
-        // Si no hay nada local pero sí en la nube, cargamos lo de la nube
         setProfile(savedData.profile_data);
         setOriginalProfile(savedData.profile_data);
         setInputData(savedData.input_data);
         setState(AppState.RESULT);
+        setIsModified(false);
       }
     } catch (err) {
       console.error("Error sincronizando perfil:", err);
     }
   };
-
-  // Eliminar el useEffect anterior de cargar perfil y usar syncProfileWithUser
 
   const handleStartForm = () => {
     setError(null);
@@ -112,6 +105,7 @@ const AppContent: React.FC = () => {
       setProfile(result);
       setOriginalProfile(result);
       setState(AppState.RESULT);
+      setIsModified(false); // Es una versión nueva, no está "modificada" respecto a sí misma
 
       if (user) {
         await profileService.saveProfile(user.id, result, data);
@@ -128,9 +122,13 @@ const AppContent: React.FC = () => {
 
   const handleProfileUpdate = async (updatedProfile: GeneratedWebProfile) => {
     setProfile(updatedProfile);
+    setIsModified(true); // Marcamos como modificado explícitamente
+
     if (user && inputData) {
       try {
         await profileService.saveProfile(user.id, updatedProfile, inputData);
+        setIsModified(false); // Tras guardar con éxito en la nube, ya no hay cambios pendientes
+        setOriginalProfile(updatedProfile); // El nuevo original es la versión guardada
       } catch (err) {
         console.error("Error actualizando perfil:", err);
       }
@@ -140,18 +138,12 @@ const AppContent: React.FC = () => {
     }
   };
 
-  const handleResetToOriginal = () => originalProfile && setProfile(originalProfile);
-  const [isModified, setIsModified] = useState(false);
-
-  // Efecto para detectar si el perfil actual difiere del original sin stringify constantes
-  useEffect(() => {
-    if (!profile || !originalProfile) {
-      setIsModified(false);
-      return;
+  const handleResetToOriginal = () => {
+    if (originalProfile) {
+      setProfile(originalProfile);
+      setIsModified(false); // Volvemos al estado original, por lo tanto no hay cambios
     }
-    // Solo hacemos la comparación pesada cuando el perfil realmente cambia
-    setIsModified(JSON.stringify(profile) !== JSON.stringify(originalProfile));
-  }, [profile, originalProfile]);
+  };
 
   return (
     <main className="min-h-screen font-sans text-black selection:bg-nounRed selection:text-white flex flex-col">
