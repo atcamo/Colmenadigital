@@ -229,11 +229,11 @@ export const BeekeeperForm: React.FC<Props> = ({ onSubmit, isLoading, onBack, er
                     <h3 className="font-black uppercase text-sm">Link de Instagram / Facebook</h3>
                     {isChecking ? <AlertCircle className="animate-spin text-nounBlue" /> : isUrlValid ? <ShieldCheck className="text-nounBlue" /> : null}
                   </div>
-                  <div className="relative">
+                  <div className="relative mb-4">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><Instagram size={24} /></div>
                     <input required name="socialUrl" value={formData.socialUrl} onChange={handleChange} placeholder="instagram.com/tu_marca" className="w-full border-4 border-black p-4 pl-12 font-bold text-lg outline-none" autoFocus />
                   </div>
-                  {urlError && <p className="text-nounRed font-black text-[10px] mt-2 uppercase">{urlError}</p>}
+                  {urlError && <p className="text-nounRed font-black text-[10px] mt-2 uppercase mb-4">{urlError}</p>}
                 </div>
 
                 <div className="bg-gray-100 p-6 border-4 border-black border-dashed">

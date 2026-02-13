@@ -5,12 +5,10 @@ import { BeekeeperInput, GeneratedWebProfile } from "../types";
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const generateWebProfile = async (input: BeekeeperInput, logoBase64?: string, lang: string = 'es'): Promise<GeneratedWebProfile> => {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY ||
-    (typeof process !== 'undefined' ? process.env.GEMINI_API_KEY : '') ||
-    (typeof process !== 'undefined' ? process.env.API_KEY : '');
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
   if (!apiKey) {
-    throw new Error("Falta la API Key. Configura VITE_GEMINI_API_KEY o GEMINI_API_KEY.");
+    throw new Error("Falta la API Key. Configura VITE_GEMINI_API_KEY en tu archivo .env.");
   }
 
   const ai = new GoogleGenAI({ apiKey });
@@ -33,7 +31,6 @@ export const generateWebProfile = async (input: BeekeeperInput, logoBase64?: str
     - Farcaster handle sugerido sin @.
     - Tono PREMIUM y evocador. No menciones tecnología en los textos públicos.
   `;
-
   const userPrompt = `
     Datos del apicultor:
     - Nombre: ${input.name}
@@ -42,10 +39,12 @@ export const generateWebProfile = async (input: BeekeeperInput, logoBase64?: str
     - Desafíos: ${input.painPointMarket}, ${input.painPointMoney}
     - Venta Online: ${input.wantsToSellOnline ? 'Sí' : 'No'}
     - Referencia Social: ${input.socialUrl}
+    - Fotos (Instagram URLs): ${input.instagramPhotos?.join(', ') || 'Ninguna'}
 
     Instrucciones de Respuesta:
     - Genera Hero Title, Tagline, Sobre Nosotros, 3 Propuestas de Valor y Análisis Estratégico.
     - Define primaryColor, secondaryColor y styleVibe.
+    - Selecciona: 1 para 'heroImage' y hasta 4 para 'galleryImages' de las fotos dadas.
   `;
 
   const messageParts: any[] = [{ text: userPrompt }];
@@ -121,6 +120,11 @@ export const generateWebProfile = async (input: BeekeeperInput, logoBase64?: str
               styleVibe: {
                 type: Type.STRING,
                 enum: ['rustic', 'minimalist', 'luxury', 'modern']
+              },
+              heroImage: { type: Type.STRING },
+              galleryImages: {
+                type: Type.ARRAY,
+                items: { type: Type.STRING }
               }
             },
             required: ["heroTitle", "tagline", "primaryColor", "secondaryColor", "styleVibe"]

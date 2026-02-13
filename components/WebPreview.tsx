@@ -46,6 +46,11 @@ export const WebPreview: React.FC<Props> = ({
     const handleHeroUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            // Generar URL para visualización inmediata
+            const blobUrl = URL.createObjectURL(file);
+            handleChange('heroImage', blobUrl);
+
+            // Subida en segundo plano si hay usuario
             const reader = new FileReader();
             reader.onloadend = async () => {
                 const base64 = reader.result as string;
@@ -53,10 +58,9 @@ export const WebPreview: React.FC<Props> = ({
                     const publicUrl = await storageService.uploadImage(user.id, 'profiles', 'hero.png', base64);
                     if (publicUrl) {
                         handleChange('heroImage', publicUrl);
-                        return;
+                        URL.revokeObjectURL(blobUrl); // Limpiar memoria
                     }
                 }
-                handleChange('heroImage', base64);
             };
             reader.readAsDataURL(file);
         }
@@ -65,28 +69,39 @@ export const WebPreview: React.FC<Props> = ({
     const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (files) {
-            const newImages = [...(tempProfile.galleryImages || [])];
             const filesArray = Array.from(files) as File[];
+            const tempUrls = filesArray.map(f => URL.createObjectURL(f));
 
-            for (const file of filesArray) {
+            // Visualización instantánea con Blobs
+            setTempProfile(prev => ({
+                ...prev,
+                galleryImages: [...(prev.galleryImages || []), ...tempUrls]
+            }));
+
+            // Procesamiento en segundo plano (Base64 / Storage)
+            for (let i = 0; i < filesArray.length; i++) {
+                const file = filesArray[i];
+                const blobUrl = tempUrls[i];
+
                 const reader = new FileReader();
-                const promise = new Promise<string>((resolve) => {
+                const base64 = await new Promise<string>((resolve) => {
                     reader.onloadend = () => resolve(reader.result as string);
+                    reader.readAsDataURL(file);
                 });
-                reader.readAsDataURL(file);
-                const base64 = await promise;
 
                 if (user) {
                     const fileName = `gallery_${Date.now()}_${Math.random().toString(36).substring(7)}.png`;
                     const publicUrl = await storageService.uploadImage(user.id, 'profiles', fileName, base64);
                     if (publicUrl) {
-                        newImages.push(publicUrl);
-                        continue;
+                        // Reemplazar el Blob por la URL definitiva
+                        setTempProfile(prev => ({
+                            ...prev,
+                            galleryImages: prev.galleryImages?.map(img => img === blobUrl ? publicUrl : img)
+                        }));
+                        URL.revokeObjectURL(blobUrl);
                     }
                 }
-                newImages.push(base64);
             }
-            handleChange('galleryImages', newImages);
         }
     };
 

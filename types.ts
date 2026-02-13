@@ -9,6 +9,7 @@ export interface BeekeeperInput {
   socialUrl: string; // Ahora es obligatorio
   logo?: string;
   wantsToSellOnline?: boolean;
+  instagramPhotos?: string[];
 }
 
 export interface GeneratedWebProfile {

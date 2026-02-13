@@ -108,28 +108,26 @@ const AppContent: React.FC = () => {
 
     try {
       const result = await generateWebProfile(data, logoBase64, lang);
+
       setProfile(result);
       setOriginalProfile(result);
       setState(AppState.RESULT);
 
-      // Si el usuario está logueado, guardamos automáticamente
       if (user) {
         await profileService.saveProfile(user.id, result, data);
       } else {
-        // Si no está logueado, guardamos en localStorage para cuando se loguee
         localStorage.setItem('pending_profile', JSON.stringify(result));
         localStorage.setItem('pending_input', JSON.stringify(data));
       }
-    } catch (error: any) {
-      console.error(error);
-      setError(error.message || "Error desconocido conectando con la colmena.");
+    } catch (err: any) {
+      console.error("Error en el proceso de generación:", err);
+      setError(err.message || "Error al conectar con la colmena.");
       setState(AppState.FORM);
     }
   };
 
   const handleProfileUpdate = async (updatedProfile: GeneratedWebProfile) => {
     setProfile(updatedProfile);
-    // Si el usuario está logueado, guardamos los cambios en la nube
     if (user && inputData) {
       try {
         await profileService.saveProfile(user.id, updatedProfile, inputData);
@@ -137,13 +135,23 @@ const AppContent: React.FC = () => {
         console.error("Error actualizando perfil:", err);
       }
     } else if (inputData) {
-      // Si no hay usuario, guardamos en local para que no se pierdan los cambios 
-      // al recargar para el login
       localStorage.setItem('pending_profile', JSON.stringify(updatedProfile));
       localStorage.setItem('pending_input', JSON.stringify(inputData));
     }
   };
+
   const handleResetToOriginal = () => originalProfile && setProfile(originalProfile);
+  const [isModified, setIsModified] = useState(false);
+
+  // Efecto para detectar si el perfil actual difiere del original sin stringify constantes
+  useEffect(() => {
+    if (!profile || !originalProfile) {
+      setIsModified(false);
+      return;
+    }
+    // Solo hacemos la comparación pesada cuando el perfil realmente cambia
+    setIsModified(JSON.stringify(profile) !== JSON.stringify(originalProfile));
+  }, [profile, originalProfile]);
 
   return (
     <main className="min-h-screen font-sans text-black selection:bg-nounRed selection:text-white flex flex-col">
@@ -182,7 +190,7 @@ const AppContent: React.FC = () => {
             onEditInputs={() => setState(AppState.FORM)}
             onUpdateProfile={handleProfileUpdate}
             onResetProfile={handleResetToOriginal}
-            isModified={JSON.stringify(profile) !== JSON.stringify(originalProfile)}
+            isModified={isModified}
             user={user}
             onLogin={() => setIsAuthModalOpen(true)}
           />
