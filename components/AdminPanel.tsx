@@ -45,10 +45,12 @@ export const AdminPanel: React.FC = () => {
     }
   };
 
-  const filteredRecords = records.filter(r =>
-    r.input_data.farmName.toLowerCase().includes(filter.toLowerCase()) ||
-    r.input_data.name.toLowerCase().includes(filter.toLowerCase())
-  );
+  const filteredRecords = records.filter(r => {
+    const farmName = r.input_data?.farmName || '';
+    const name = r.input_data?.name || '';
+    return farmName.toLowerCase().includes(filter.toLowerCase()) ||
+      name.toLowerCase().includes(filter.toLowerCase());
+  });
 
   if (loading) return (
     <div className="flex flex-col items-center justify-center min-h-[400px]">
@@ -109,16 +111,16 @@ export const AdminPanel: React.FC = () => {
                     )}
                   </td>
                   <td className="px-6 py-4">
-                    <div className="font-bold text-sm">{record.input_data.farmName}</div>
-                    <div className="text-[10px] text-gray-400 font-bold uppercase">{record.input_data.name}</div>
+                    <div className="font-bold text-sm">{record.input_data?.farmName || 'Sin nombre'}</div>
+                    <div className="text-[10px] text-gray-400 font-bold uppercase">{record.input_data?.name || 'Anónimo'}</div>
                   </td>
                   <td className="px-6 py-4">
                     <a
-                      href={record.input_data.socialUrl}
+                      href={record.input_data?.socialUrl || '#'}
                       target="_blank"
                       className="text-nounBlue font-bold text-xs flex items-center gap-1 hover:underline"
                     >
-                      {record.input_data.socialUrl.replace('https://', '')} <ExternalLink size={12} />
+                      {(record.input_data?.socialUrl || 'Sin RSS').replace('https://', '')} <ExternalLink size={12} />
                     </a>
                   </td>
                   <td className="px-6 py-4 font-mono text-xs font-bold text-stone-500">
