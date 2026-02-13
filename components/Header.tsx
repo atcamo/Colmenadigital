@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { NounsGlasses } from './NounsGlasses';
 import { ArrowLeft } from 'lucide-react';
@@ -36,7 +37,7 @@ export const Header: React.FC<Props> = ({ currentState, onGoHome, onBack, user, 
       <div className="max-w-6xl mx-auto flex justify-between items-center">
 
         <div className="flex items-center gap-4">
-          {(currentState === AppState.FORM || currentState === AppState.RESULT) && (
+          {(currentState === AppState.FORM || currentState === AppState.RESULT || currentState === AppState.ADMIN) && (
             <button
               onClick={onBack}
               className="p-2 bg-white border-2 border-black shadow-hard-sm hover:translate-y-1 hover:shadow-none transition-all"
@@ -73,6 +74,14 @@ export const Header: React.FC<Props> = ({ currentState, onGoHome, onBack, user, 
                 <p className="text-[8px] font-black uppercase text-gray-400 leading-none">{t('header.myProfile')}</p>
                 <p className="text-[10px] font-black truncate max-w-[100px]">{user.email?.split('@')[0]}</p>
               </div>
+              {user.email === 'tu-correo-admin@gmail.com' && (
+                <button
+                  onClick={() => (window as any).setAppStateAdmin()}
+                  className="bg-nounBlue text-white px-3 py-1 font-black text-[10px] uppercase hover:bg-blue-600 transition-colors"
+                >
+                  Admin
+                </button>
+              )}
               <button
                 onClick={handleLogout}
                 className="bg-black text-white px-3 py-1 font-black text-[10px] uppercase hover:bg-nounRed transition-colors"

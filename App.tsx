@@ -13,6 +13,11 @@ import { generateWebProfile } from './services/geminiService';
 import { profileService } from './services/profileService';
 import { LoadingState } from './components/LoadingState';
 import { LanguageProvider, useTranslation } from './context/LanguageContext';
+import { AdminPanel } from './components/AdminPanel';
+
+// CONFIGURACIÓN DE ADMIN: Cambia esto por tu correo de Google
+const ADMIN_EMAIL = 'tu-correo-admin@gmail.com';
+
 
 const AppContent: React.FC = () => {
   const { lang, t } = useTranslation();
@@ -42,6 +47,12 @@ const AppContent: React.FC = () => {
         // Si el usuario acaba de entrar (viniendo de un Magic Link o OAuth)
         if (event === 'SIGNED_IN' && currentUser) {
           syncProfileWithUser(currentUser.id);
+
+          // Si es el admin, lo mandamos directo al panel por defecto si queremos, 
+          // o simplemente habilitamos el estado.
+          if (currentUser.email === ADMIN_EMAIL) {
+            console.log("Bienvenido, Administrador de la Colmena.");
+          }
         }
       });
 
@@ -50,6 +61,15 @@ const AppContent: React.FC = () => {
   }, []);
 
   const [isModified, setIsModified] = useState(false);
+
+  // Exponer función de admin globalmente para el Header
+  useEffect(() => {
+    (window as any).setAppStateAdmin = () => {
+      if (user?.email === ADMIN_EMAIL) {
+        setState(AppState.ADMIN);
+      }
+    };
+  }, [user]);
 
   // Función para sincronizar datos locales con el servidor cuando el usuario se loguea
   const syncProfileWithUser = async (userId: string) => {
@@ -92,6 +112,7 @@ const AppContent: React.FC = () => {
     setError(null);
     if (state === AppState.RESULT) setState(AppState.FORM);
     else if (state === AppState.FORM) setState(AppState.LANDING);
+    else if (state === AppState.ADMIN) setState(AppState.LANDING);
   };
 
   const handleFormSubmit = async (data: BeekeeperInput, logoBase64?: string) => {
@@ -186,6 +207,10 @@ const AppContent: React.FC = () => {
             user={user}
             onLogin={() => setIsAuthModalOpen(true)}
           />
+        )}
+
+        {state === AppState.ADMIN && user?.email === ADMIN_EMAIL && (
+          <AdminPanel />
         )}
       </div>
 
