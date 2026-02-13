@@ -14,9 +14,10 @@ interface Props {
   onBack: () => void;
   user: User | null;
   onLogin: () => void;
+  isAdmin?: boolean;
 }
 
-export const Header: React.FC<Props> = ({ currentState, onGoHome, onBack, user, onLogin }) => {
+export const Header: React.FC<Props> = ({ currentState, onGoHome, onBack, user, onLogin, isAdmin }) => {
   const { lang, setLang, t } = useTranslation();
 
   const handleLogout = async () => {
@@ -74,7 +75,7 @@ export const Header: React.FC<Props> = ({ currentState, onGoHome, onBack, user, 
                 <p className="text-[8px] font-black uppercase text-gray-400 leading-none">{t('header.myProfile')}</p>
                 <p className="text-[10px] font-black truncate max-w-[100px]">{user.email?.split('@')[0]}</p>
               </div>
-              {user.email === 'tu-correo-admin@gmail.com' && (
+              {isAdmin && (
                 <button
                   onClick={() => (window as any).setAppStateAdmin()}
                   className="bg-nounBlue text-white px-3 py-1 font-black text-[10px] uppercase hover:bg-blue-600 transition-colors"

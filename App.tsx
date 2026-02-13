@@ -213,6 +213,7 @@ const AppContent: React.FC = () => {
         onBack={handleBack}
         user={user}
         onLogin={() => setIsAuthModalOpen(true)}
+        isAdmin={user?.email === ADMIN_EMAIL}
       />
 
       <div className="flex-grow">
