@@ -14,6 +14,8 @@ import { profileService } from './services/profileService';
 import { LoadingState } from './components/LoadingState';
 import { LanguageProvider, useTranslation } from './context/LanguageContext';
 import { AdminPanel } from './components/AdminPanel';
+import { SubdomainPending } from './components/SubdomainPending';
+
 
 // CONFIGURACIÓN DE ADMIN: Cambia esto por tu correo de Google
 const ADMIN_EMAIL = 'atilioacm@gmail.com';
@@ -28,6 +30,8 @@ const AppContent: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [currentSubdomain, setCurrentSubdomain] = useState<string | null>(null);
+
 
   useEffect(() => {
     // Escuchar cambios en la autenticación
@@ -72,6 +76,7 @@ const AppContent: React.FC = () => {
       if (parts.length > 2 && !hostname.includes('vercel.app')) {
         const subdomain = parts[0];
         if (subdomain !== 'www' && subdomain !== 'admin') {
+          setCurrentSubdomain(subdomain);
           try {
             const data = await profileService.getProfileBySlug(subdomain);
             if (data) {
@@ -79,9 +84,13 @@ const AppContent: React.FC = () => {
               setOriginalProfile(data.profile_data);
               setInputData(data.input_data);
               setState(AppState.RESULT);
+            } else {
+              // El subdominio existe pero no hay perfil aprobado
+              setState(AppState.NOT_FOUND);
             }
           } catch (err) {
             console.error("Error cargando perfil de subdominio:", err);
+            setState(AppState.NOT_FOUND);
           }
         }
       }
@@ -241,6 +250,13 @@ const AppContent: React.FC = () => {
 
         {state === AppState.ADMIN && user?.email === ADMIN_EMAIL && (
           <AdminPanel />
+        )}
+
+        {state === AppState.NOT_FOUND && (
+          <SubdomainPending
+            subdomain={currentSubdomain || 'unknown'}
+            onGoHome={() => window.location.href = 'https://beenouns.xyz'}
+          />
         )}
       </div>
 

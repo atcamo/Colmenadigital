@@ -31,5 +31,6 @@ export enum AppState {
   FORM,
   LOADING,
   RESULT,
-  ADMIN
+  ADMIN,
+  NOT_FOUND
 }
